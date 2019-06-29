@@ -81,14 +81,14 @@ app.onSync(async (body, headers) => {
 
 	promiseMongo.then(function(dbo){
 		console.log("Connected to mongo database. " + dbo.domain);
-		userExists();
+		userExists().then(function(success){
+			console.log("User ID: " + success);
+		}, function(error){
+			console.log("Error: " + error);
+		})
 	}, function(error){
 		console.log("Can not connect to database.");
-	}).then(function(success){
-		console.log("Success. " + success);
-	}, function(error){
-		console.log("Error. " + error);
-	});
+	})
 });
 
 
