@@ -149,26 +149,31 @@ function prepareDeviceData(userEmail){
 app.onSync(async (body, headers) => {
 	const userEmail = await getEmail(headers);
 	//const userEmail = "sanjeet.pathak990@gmail.com";
-	var promisePrepare = prepareDeviceData(userEmail);
-	promisePrepare.then(function(devices){
-		var data = {
-			requestId: body.requestId,
-			payload: {
-			  agentUserId: userEmail,
-			  devices
-			}
-		  };
-		  console.log(data);
-		  return data;
-	}, function(error){
-		return {
-			requestId: body.requestId,
-			payload: {
-			  agentUserId: userEmail,
-			  devices: []
-			}
-		  };
-	});
+	const start = async (userEmail) => {
+		var promisePrepare = prepareDeviceData(userEmail);
+		promisePrepare.then(function(devices){
+			var data = {
+				requestId: body.requestId,
+				payload: {
+					agentUserId: userEmail,
+					devices
+				}
+			};
+			console.log(data);
+			return data;
+		}, function(error){
+			return {
+				requestId: body.requestId,
+				payload: {
+					agentUserId: userEmail,
+					devices: []
+				}
+			};
+		});
+	}
+
+	return await start(userEmail);
+
 });
 
 
