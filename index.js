@@ -236,20 +236,15 @@ function doExecute(userId, deviceId, execution, dbo){
 	return new Promise(function(resolve, reject) {
 		// Query database
 		var query = { _id: deviceId };
-		dbo.collection("status").find(query).toArray(function(err, result) {
+		dbo.collection("status").find(query).count(function(err, result) {
 			if (err){
 				reject(err);
 			}else{
-				var filtered = result.filter(function (el) {
-					return el != null;
+				var query = { _id: deviceId };
+				var newvalues = { $set: {running: false } };
+				dbo.collection("status").updateOne(query, newvalues, function(err, res) {
+					resolve(newvalues);
 				});
-				if(filtered.length > 0){
-					var query = { _id: deviceId };
-					var newvalues = { $set: {running: false } };
-					dbo.collection("status").updateOne(query, newvalues, function(err, res) {
-						resolve(newvalues);
-					});
-				}
 			}
 		})
     })
