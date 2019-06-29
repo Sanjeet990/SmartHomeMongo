@@ -242,7 +242,7 @@ function doExecute(userId, deviceId, execution, dbo){
 			}else{
 				var newvalues = { $set: {running: false } };
 				dbo.collection("status").updateOne(query, newvalues);
-				resolve(dbo.collection("status").find(query));
+				resolve(dbo.collection("status").find(query).toArray());
 			}
 		})
     })
