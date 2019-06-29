@@ -169,7 +169,7 @@ app.onQuery(async (body, headers) => {
 			await asyncForEach(devices, async (device) => {
 			  const state = await checkDevice(userId, device.id, dbo);
 				deviceStates[device.id] = {
-					on: true,
+					on: state[0].running,
 					online: true
 				};
 			  });
