@@ -158,7 +158,7 @@ app.onSync(async (body, headers) => {
 			  devices
 			}
 		  };
-		  console.log(devices.resolve);
+		  console.log(JSON.stringify(data, null, 4));
 		  return data;
 	}, function(error){
 		return {
