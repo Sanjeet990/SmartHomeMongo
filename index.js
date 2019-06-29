@@ -226,10 +226,10 @@ app.onExecute(async (body, headers) => {
 	});
 
 	await asyncForEach(fineDevices, async (device) => {
-		await doExecute(userId, device, execution, dbo);
+		var data = await doExecute(userId, device, execution, dbo);
+		console.log(JSON.stringify(data, null, 4));
 	});
 	
-	console.log(JSON.stringify(data, null, 4));
 });
 
 function doExecute(userId, deviceId, execution, dbo){
