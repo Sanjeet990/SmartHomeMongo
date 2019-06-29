@@ -82,10 +82,10 @@ app.onSync(async (body, headers) => {
 				//Find devices
 				const deviceFind = async(device) => {
 					var query = { _id: device };	
-					dbo.collection("devices").find(query).toArray(function(err, deviceList) {
+					await dbo.collection("devices").find(query).toArray(async function(err, deviceList) {
 						console.log("Step 3");
 						if (err) throw err;
-						asyncForEach(deviceList, (singleDevice) => {
+						await asyncForEach(deviceList, async(singleDevice) => {
 						console.log("Step 4");
 							var subDevices = singleDevice.subDevices;
 							asyncForEach(subDevices, (data) => {
