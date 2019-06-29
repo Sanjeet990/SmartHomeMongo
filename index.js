@@ -46,7 +46,7 @@ var port = process.env.PORT || 3000;
 app.onSync(async (body, headers) => {
 	const userEmail = await getEmail(headers);
 	const userDevices = [];
-	MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
+	MongoClient.connect(url, { useNewUrlParser: true }, async function(err, db) {
 		
 		if (err){
 			return {
