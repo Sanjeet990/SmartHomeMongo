@@ -82,13 +82,13 @@ app.onSync(async (body, headers) => {
 					await asyncForEach(devices, async (device) => {
 						console.log("Step 2");
 						var query = { _id: device };
-						await dbo.collection("devices").find(query).toArray(async function(err, deviceList) {
+						dbo.collection("devices").find(query).toArray(function(err, deviceList) {
 							console.log("Step 3");
 							if (err) throw err;
-							await asyncForEach(deviceList, async (singleDevice) => {
+							asyncForEach(deviceList, (singleDevice) => {
 								console.log("Step 4");
 								var subDevices = singleDevice.subDevices;
-								await asyncForEach(subDevices, async (data) => {
+								asyncForEach(subDevices, (data) => {
 									console.log("Step 5");
 									const deviceData = {
 										"id": data.id,
@@ -112,7 +112,7 @@ app.onSync(async (body, headers) => {
 										  "bazValue": "foo"
 										}
 									};
-									await userDevices.push(deviceData);
+									userDevices.push(deviceData);
 									console.log("Step 6");
 									//db.close();
 								});
