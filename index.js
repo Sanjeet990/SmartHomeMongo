@@ -59,6 +59,20 @@ function initDBConnection(){
     })
 }
 
+function userExists(userEmail){
+	return new Promise(function(resolve, reject) {
+		// Connect to database
+		var query = { _id: userEmail };
+		dbo.collection("users").find(query).toArray().then(function(err, result) {
+			if (err){
+				reject(err);
+			}else{
+				resolve(result[0]._id);
+			}
+		})
+    })
+}
+
 app.onSync(async (body, headers) => {
 	const userEmail = await getEmail(headers);
 	const userDevices = [];
@@ -66,9 +80,14 @@ app.onSync(async (body, headers) => {
 	var promiseMongo = initDBConnection();
 
 	promiseMongo.then(function(dbo){
-		console.log("Connected to mongo database. " + dbo);
+		console.log("Connected to mongo database. " + dbo.domain);
+		userExists();
 	}, function(error){
 		console.log("Can not connect to database.");
+	}).then(function(success){
+		console.log("Success. " + success);
+	}, function(error){
+		console.log("Error. " + error);
 	});
 });
 
