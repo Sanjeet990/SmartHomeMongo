@@ -62,7 +62,7 @@ app.onSync(async (body, headers) => {
 		var dbo = db.db("smarthome");
 		//check if user exists
 		var query = { _id: userEmail };
-		await dbo.collection("users").find(query).toArray(function(err, result) {
+		await dbo.collection("users").find(query).toArray(async function(err, result) {
 			if (err) throw err;
 			if(result[0]._id != userEmail){
 				console.log("User not found" + userEmail);
@@ -81,7 +81,7 @@ app.onSync(async (body, headers) => {
 				const start = async () => {
 					await asyncForEach(devices, async (device) => {
 						var query = { _id: device };
-						dbo.collection("devices").find(query).toArray(async function(err, deviceList) {
+						await dbo.collection("devices").find(query).toArray(async function(err, deviceList) {
 							if (err) throw err;
 							await asyncForEach(deviceList, async (singleDevice) => {
 								var subDevices = singleDevice.subDevices;
@@ -116,7 +116,7 @@ app.onSync(async (body, headers) => {
 						});
 					});
 				} 
-				start();
+				await start();
 				//console.log(JSON.stringify(userDevices, null, 4));
 			}
 		});
