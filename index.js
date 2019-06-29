@@ -84,7 +84,7 @@ app.onSync(async (body, headers) => {
 		userExists(userEmail, dbo).then(function(success){
 			console.log("User ID: " + success);
 		}, function(error){
-			console.log("Error: " + error);
+			console.log("Error: " + error.getmessage);
 		})
 	}, function(error){
 		console.log("Can not connect to database.");
