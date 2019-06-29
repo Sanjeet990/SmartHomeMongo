@@ -59,32 +59,62 @@ function initDBConnection(){
     })
 }
 
-function userExists(userEmail, dbo){
+function findDevices(userEmail, dbo){
 	return new Promise(function(resolve, reject) {
-		// Connect to database
+		// Query database
 		var query = { _id: userEmail };
-		dbo.collection("users").find(query).toArray().then(function(err, result) {
+		dbo.collection("users").find(query).toArray(function(err, result) {
 			if (err){
 				reject(err);
 			}else{
-				resolve(result[0]._id);
+				var filtered = result[0].devices.filter(function (el) {
+					return el != null;
+				});
+				resolve(filtered);
 			}
 		})
     })
 }
 
+function findSubDevices(devices, dbo){
+	return new Promise(function(resolve, reject) {
+		// Query database by iterating over
+		var subDevices = [];
+		devices.forEach(device => {
+			var query = { _id: device };
+			dbo.collection("devices").find(query).toArray(function(err, result) {
+				result.forEach(subDevice => {
+					if (err){
+						reject(err);
+					}else{
+						var filtered = result[0].subDevices.filter(function (el) {
+							return el != null;
+						});
+						resolve(filtered);
+					}
+				});
+			})
+		});
+    })
+}
+
 app.onSync(async (body, headers) => {
 	const userEmail = await getEmail(headers);
+	//const userEmail = "sanjeet.pathak990@gmail.com";
 	const userDevices = [];
 	
 	var promiseMongo = initDBConnection();
 
 	promiseMongo.then(function(dbo){
 		console.log("Connected to mongo database. " + dbo.domain);
-		userExists(userEmail, dbo).then(function(success){
-			console.log("User ID: " + success);
+		findDevices(userEmail, dbo).then(function(devices){
+			findSubDevices(devices, dbo).then(function(subDevice){
+				console.log("Success: " + subDevice[0].name);
+			}, function(error){
+				console.log("Error: " + error);
+			})
 		}, function(error){
-			console.log("Error: " + error.getmessage);
+			console.log("Error: " + error);
 		})
 	}, function(error){
 		console.log("Can not connect to database.");
