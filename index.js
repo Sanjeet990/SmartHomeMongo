@@ -193,7 +193,7 @@ function checkDevice(userEmail, deviceID, dbo){
 			if (err){
 				reject(err);
 			}else{
-				var filtered = result[0].devices.filter(function (el) {
+				var filtered = result.filter(function (el) {
 					return el != null;
 				});
 				resolve(filtered);
