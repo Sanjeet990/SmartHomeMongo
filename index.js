@@ -156,50 +156,11 @@ app.onSync(async (body, headers) => {
 	return data;
 });
 
-app.onQuery(async (body, headers) => {
-  // TODO Get device state
-  try{
-	  const userId = await getEmail(headers);
-	  const { devices } = body.inputs[0].payload;
-	  const deviceStates = {};
-	  
-	  const start = async () => {
-		  await asyncForEach(devices, async (device) => {
-			const state = await doCheck(userId, device.id);
-			deviceStates[device.id] = state;
-			});
-		  
-	  } 
-	  await start();
-	  const myObject = {
-			requestId: body.requestId,
-			payload: {
-			  devices: deviceStates,
-			},
-		  };
-	  //console.log(JSON.stringify(myObject, null, 4));
-	  return myObject;
-  }catch(e){
-	console.log(e.getmessage);
-  }
-});
-
 app.onDisconnect((body, headers) => {
   // TODO Disconnect user account from Google Assistant
   // You can return an empty body
   return {};
 });
-
-const doCheck = async (userId, deviceId) => {
-	  const doc = await db.collection('users').doc(userId).collection('devices').doc(deviceId).get();
-	  if (!doc.exists) {
-        throw new Error('deviceNotFound' + deviceId);
-      }else{
-		return doc.data().states;
-	  }
-}
-
-
 
 app.onExecute(async (body, headers) => {
 	const userId = await getEmail(headers);
@@ -235,7 +196,7 @@ app.onExecute(async (body, headers) => {
 			  commands.push({
 				  ids: [device.id],
 				  status: 'ERROR',
-				  errorCode: e.message,
+				  //errorCode: e.message,
 			  });
 		  }
 	  });	  
