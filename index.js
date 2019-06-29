@@ -265,7 +265,7 @@ app.onExecute(async (body, headers) => {
 				commands,
 			},
 		  };
-	console.log(JSON.stringify(data, null, 4));
+	return data;
 });
 
 function doExecute(userId, deviceId, execution, dbo){
