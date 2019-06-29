@@ -149,30 +149,16 @@ function prepareDeviceData(userEmail){
 app.onSync(async (body, headers) => {
 	const userEmail = await getEmail(headers);
 	//const userEmail = "sanjeet.pathak990@gmail.com";
-	var promisePrepare = prepareDeviceData(userEmail);
-	promisePrepare.then(function(devices){
-		var data = {
+	var devices = await prepareDeviceData(userEmail);
+	var data = {
 			requestId: body.requestId,
 			payload: {
 			  agentUserId: userEmail,
 			  devices
 			}
 		  };
-		  console.log(JSON.stringify(data, null, 4));
-		  return data;
-	}, function(error){
-		return {
-			requestId: body.requestId,
-			payload: {
-			  agentUserId: userEmail,
-			  devices: []
-			}
-		  };
-	});
-}).then((res) => {
-	console.log("Success : " + res);
-}).catch((res) => {
-	console.log("Failed : " + res);
+	console.log(JSON.stringify(data, null, 4));
+	return data;
 });
 
 
