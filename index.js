@@ -117,20 +117,20 @@ app.onSync(async (body, headers) => {
 					});
 				} 
 				await start();
-				//console.log(JSON.stringify(userDevices, null, 4));
+						
+				//method end. Time to return good things back
+				var response = {
+					requestId: body.requestId,
+					payload: {
+					  agentUserId: userEmail,
+					  userDevices
+					}
+				}
+				
+				console.log(JSON.stringify(response, null, 4));
+				return response;//console.log(JSON.stringify(userDevices, null, 4));
 			}
 		});
-		//method end. Time to return good things back
-		var response = {
-			requestId: body.requestId,
-			payload: {
-			  agentUserId: userEmail,
-			  userDevices
-			}
-		}
-		
-		console.log(JSON.stringify(response, null, 4));
-		return response;
 	});
 });
 
