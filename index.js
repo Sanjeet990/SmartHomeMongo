@@ -240,11 +240,9 @@ function doExecute(userId, deviceId, execution, dbo){
 			if (err){
 				reject(err);
 			}else{
-				var query = { _id: deviceId };
 				var newvalues = { $set: {running: false } };
-				dbo.collection("status").updateOne(query, newvalues, function(err, res) {
-					resolve(newvalues);
-				});
+				dbo.collection("status").updateOne(query, newvalues);
+				resolve(dbo.collection("status").find(query));
 			}
 		})
     })
