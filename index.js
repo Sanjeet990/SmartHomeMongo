@@ -224,7 +224,7 @@ app.onExecute(async (body, headers) => {
 		states: {},
 	}];
 
-	const { devices, execution } = body.inputs[0].payload.commands[0];
+	const { devices, execution } = await body.inputs[0].payload.commands[0];
 	var dbo = await initDBConnection();
 
 	var fineDevices = await devices.filter(function (el) {
@@ -233,7 +233,7 @@ app.onExecute(async (body, headers) => {
 
 	await asyncForEach(fineDevices, async (device) => {
 		try{
-			var states = await doExecute(userId, device.id, execution, dbo);
+			var state = await doExecute(userId, device.id, execution, dbo);
 			commands[0].ids.push(device.id);
 			commands[0].states = {
 				on: state[0].running,
