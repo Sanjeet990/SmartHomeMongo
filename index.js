@@ -208,16 +208,6 @@ function checkDevice(userEmail, deviceID, dbo){
 		})
     })
 }
-
-const doCheck = async (userId, deviceId) => {
-	var dbo = await initDBConnection();
-	const dataCount = await dbo.collection("status").find({_id: deviceId}).count();
-	if(dataCount == 0){
-		throw new Error('deviceNotFound');
-	}
-	var data = await dbo.collection("status").find({_id: deviceId});
-	console.log(JSON.stringify(data, null, 4));
-}
   
 app.onDisconnect((body, headers) => {
   // TODO Disconnect user account from Google Assistant
@@ -239,7 +229,7 @@ app.onExecute(async (body, headers) => {
 	const start = async () => {
 	  await asyncForEach(devices, async (device) => {
 		  try {
-			  //const states = await doExecute(userId, device.id, execution[0]);
+			  const states = await doExecute(userId, device.id, execution[0]);
 			  commands[0].ids.push(device.id);
 			  commands[0].states = states;
 			  // Report state back to Homegraph
@@ -249,7 +239,7 @@ app.onExecute(async (body, headers) => {
 				  payload: {
 					  devices: {
 						  states: {
-							  //[device.id]: states,
+							  [device.id]: states,
 						  },
 					  },
 				  },
@@ -259,7 +249,7 @@ app.onExecute(async (body, headers) => {
 			  commands.push({
 				  ids: [device.id],
 				  status: 'ERROR',
-				  //errorCode: e.message,
+				  errorCode: e.message,
 			  });
 		  }
 	  });	  
@@ -273,21 +263,23 @@ app.onExecute(async (body, headers) => {
 		  },
 	};
 });
-    
-const doExecute = async (userId, deviceId, execution) => {
-	
-    if (!userId) {
-        throw new Error('deviceNotFound');
-	}
-	
-    const states = {
-        online: true,
-	};
-	
-	var dbo = await initDBConnection();
 
-
-    return states;
+function doExecute(userId, deviceId, execution){
+	return new Promise(function(resolve, reject) {
+		// Query database
+		var query = { _id: deviceID };
+		dbo.collection("status").find(query).limit(1).count(function(err, result) {
+			if (err){
+				reject(err);
+			}else{
+				var filtered = result.filter(function (el) {
+					return el != null;
+				});
+				console.log(JSON.stringify(filtered, null, 4));
+				resolve(filtered);
+			}
+		})
+    })
 }
 
 express().use(bodyParser.json(), app).listen(port);
