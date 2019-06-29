@@ -219,11 +219,11 @@ app.onExecute(async (body, headers) => {
 	const userId = await getEmail(headers);
 	
 	const { devices, execution } = body.inputs[0].payload.commands[0];
-	devices = await devices.filter(function (el) {
+	var fineDevices = await devices.filter(function (el) {
 		return el != null;
 	});
 
-	await asyncForEach(devices, async (device) => {
+	await asyncForEach(fineDevices, async (device) => {
 		console.log(device);
 	});
 		  
