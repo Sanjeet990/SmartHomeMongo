@@ -265,7 +265,7 @@ const doExecute = async (userId, deviceId, execution) => {
 	promiseMongo.then(function(dbo){
 		console.log("Connected to mongo instance");
 		var query = { _id: device };
-		dbo.collection("status").count({}, function(error, numOfDocs){
+		dbo.collection("status").count(query, function(error, numOfDocs){
 			if(error) return callback(error);
 			console.log("Okay: " + numOfDocs);
         });
@@ -273,23 +273,23 @@ const doExecute = async (userId, deviceId, execution) => {
 
 	});
 
-    const data = doc.data();
-    if (!data.states.online) {
-        throw new Error('deviceOffline');
-    }
-    switch (execution.command) {
-        // action.devices.traits.ArmDisarm
-        case 'action.devices.commands.OnOff':
-            await db.collection('users').doc(userId).collection('devices').doc(deviceId).update({
-                'states.on': execution.params.on,
-            });
-            states['on'] = execution.params.on;
-            break;
-            // action.devices.traits.OpenClose
-        default:
-            throw new Error('actionNotAvailable');
-    }
-    return states;
+    // const data = doc.data();
+    // if (!data.states.online) {
+    //     throw new Error('deviceOffline');
+    // }
+    // switch (execution.command) {
+    //     // action.devices.traits.ArmDisarm
+    //     case 'action.devices.commands.OnOff':
+    //         await db.collection('users').doc(userId).collection('devices').doc(deviceId).update({
+    //             'states.on': execution.params.on,
+    //         });
+    //         states['on'] = execution.params.on;
+    //         break;
+    //         // action.devices.traits.OpenClose
+    //     default:
+    //         throw new Error('actionNotAvailable');
+    // }
+    // return states;
 }
 
 express().use(bodyParser.json(), app).listen(port);
