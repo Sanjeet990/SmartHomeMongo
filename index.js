@@ -265,7 +265,11 @@ const doExecute = async (userId, deviceId, execution) => {
 	promiseMongo.then(function(dbo){
 		console.log("Connected to mongo instance");
 		var query = { _id: device };
-		console.log("Data : " + dbo.collection("status").find(query).limit(1).count());
+		dbo.collection("status").find(query).limit(1).count().then(function(res){
+
+		}, function(failed){
+
+		});
 	}, function(error){
 		console.log("Error found");
 	});
