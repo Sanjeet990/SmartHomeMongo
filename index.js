@@ -164,6 +164,13 @@ app.onQuery(async (body, headers) => {
 		const { devices } = body.inputs[0].payload;
 		const deviceStates = {};
 		
+		const start = async () => {
+			await asyncForEach(devices, async (device) => {
+			  const state = await doCheck(userId, device.id);
+			  deviceStates[device.id] = state;
+			  });
+		} 
+		await start();
 		
 	}catch(e){
 	  console.log(e.getmessage);
