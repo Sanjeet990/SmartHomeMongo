@@ -75,7 +75,7 @@ app.onSync(async (body, headers) => {
 				  }
 				}
 			}else{
-				console.log("User not found" + userEmail);
+				console.log("User found" + userEmail);
 				//User found. Proceed returning the user devices
 				var devices = result[0].devices;
 				const start = async () => {
@@ -121,13 +121,16 @@ app.onSync(async (body, headers) => {
 			}
 		});
 		//method end. Time to return good things back
-		return {
+		var response = {
 			requestId: body.requestId,
 			payload: {
 			  agentUserId: userEmail,
 			  userDevices
 			}
 		}
+		
+		console.log(JSON.stringify(response, null, 4));
+		return response;
 	});
 });
 
