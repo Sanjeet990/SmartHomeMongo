@@ -218,6 +218,12 @@ app.onDisconnect((body, headers) => {
 app.onExecute(async (body, headers) => {
 	const userId = await getEmail(headers);
 	
+	const commands = [{
+		ids: [],
+		status: 'SUCCESS',
+		states: {},
+	}];
+
 	const { devices, execution } = body.inputs[0].payload.commands[0];
 	var dbo = await initDBConnection();
 
@@ -226,10 +232,36 @@ app.onExecute(async (body, headers) => {
 	});
 
 	await asyncForEach(fineDevices, async (device) => {
-		var data = await doExecute(userId, device.id, execution, dbo);
-		console.log(JSON.stringify(data, null, 4));
+		try{
+			var states = await doExecute(userId, device.id, execution, dbo);
+			commands[0].ids.push(device.id);
+			commands[0].states = states;
+			// Report state back to Homegraph
+			app.reportState({
+				agentUserId: userId,
+				requestId: body.requestId,
+				payload: {
+					devices: {
+						states: {
+							[device.id]: states,
+						},
+					},
+				},
+			});
+		}catch (e) {
+			commands.push({
+				ids: [device.id],
+				status: 'ERROR',
+				errorCode: e.message,
+			});
+		}
 	});
-	
+	return {
+			requestId: body.requestId,
+			payload: {
+				commands,
+			},
+  		};
 });
 
 function doExecute(userId, deviceId, execution, dbo){
