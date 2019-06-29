@@ -241,7 +241,7 @@ function doExecute(userId, deviceId, execution, dbo){
 				reject(err);
 			}else{
 				var newvalues = { $set: {running: false } };
-				dbo.collection("status").findOneAndUpdate({deviceId}, newvalues, {upsert:true,strict: false});
+				dbo.collection("status").findOneAndUpdate({122}, newvalues, {upsert:true,strict: false});
 				resolve(dbo.collection("status").find(query).toArray());
 			}
 		})
