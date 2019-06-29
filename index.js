@@ -100,14 +100,14 @@ function findSubDevices(devices, dbo){
 
 function prepareDeviceData(userEmail){
 	return new Promise(function(resolve, reject) {
-		const userDevices = [];
+		const devices = [];
 		
 		var promiseMongo = initDBConnection();
 
 		promiseMongo.then(function(dbo){
 			console.log("Connected to mongo database. " + dbo.domain);
-			findDevices(userEmail, dbo).then(function(devices){
-				findSubDevices(devices, dbo).then(function(subDevice){
+			findDevices(userEmail, dbo).then(function(devicex){
+				findSubDevices(devicex, dbo).then(function(subDevice){
 					subDevice.forEach(data => {	
 						const deviceData = {
 							"id": data.id,
@@ -131,9 +131,9 @@ function prepareDeviceData(userEmail){
 							"bazValue": "foo"
 							}
 						};
-						userDevices.push(deviceData);
+						devices.push(deviceData);
 					});
-					resolve(userDevices);
+					resolve(devices);
 				}, function(error){
 					reject("Error: " + error);
 				})
@@ -150,12 +150,12 @@ app.onSync(async (body, headers) => {
 	const userEmail = await getEmail(headers);
 	//const userEmail = "sanjeet.pathak990@gmail.com";
 	var promisePrepare = prepareDeviceData(userEmail);
-	promisePrepare.then(function(deviceData){
+	promisePrepare.then(function(devices){
 		var data = {
 			requestId: body.requestId,
 			payload: {
 			  agentUserId: userEmail,
-			  deviceData
+			  devices
 			}
 		  };
 		  console.log(JSON.stringify(data, null, 4));
