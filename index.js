@@ -219,18 +219,20 @@ app.onExecute(async (body, headers) => {
 	const userId = await getEmail(headers);
 	
 	const { devices, execution } = body.inputs[0].payload.commands[0];
+	var dbo = await initDBConnection();
+
 	var fineDevices = await devices.filter(function (el) {
 		return el != null;
 	});
 
 	await asyncForEach(fineDevices, async (device) => {
-		await doExecute(userId, device, execution);
+		await doExecute(userId, device, execution, dbo);
 	});
 	
 	console.log(JSON.stringify(data, null, 4));
 });
 
-function doExecute(userId, deviceId, execution){
+function doExecute(userId, deviceId, execution, dbo){
 	return new Promise(function(resolve, reject) {
 		// Query database
 		var query = { _id: deviceId };
