@@ -50,7 +50,7 @@ app.onSync(async (body, headers) => {
 		
 		if (err){
 			return {
-				//requestId: body.requestId,
+				requestId: body.requestId,
 				payload: {
 					agentUserId: userEmail,
 					userDevices
@@ -65,15 +65,17 @@ app.onSync(async (body, headers) => {
 		dbo.collection("users").find(query).toArray(function(err, result) {
 			if (err) throw err;
 			if(result[0]._id != userEmail){
+				console.log("User not found" + userEmail);
 				//user not found! No device in the database
 				return {
-				  //requestId: body.requestId,
+				  requestId: body.requestId,
 				  payload: {
 					agentUserId: userEmail,
 					userDevices
 				  }
 				}
 			}else{
+				console.log("User not found" + userEmail);
 				//User found. Proceed returning the user devices
 				var devices = result[0].devices;
 				const start = async () => {
@@ -120,7 +122,7 @@ app.onSync(async (body, headers) => {
 		});
 		//method end. Time to return good things back
 		return {
-	//		requestId: body.requestId,
+			requestId: body.requestId,
 			payload: {
 			  agentUserId: userEmail,
 			  userDevices
