@@ -256,12 +256,13 @@ app.onExecute(async (body, headers) => {
 	} 
 	await start();
 	
-	return {
+	data = {
 		  requestId: body.requestId,
 		  payload: {
 			  commands,
 		  },
 	};
+	console.log(JSON.stringify(data, null, 4));
 });
 
 function doExecute(userId, deviceId, execution){
