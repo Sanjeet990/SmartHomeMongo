@@ -229,9 +229,12 @@ app.onExecute(async (body, headers) => {
 	const start = async () => {
 	  await asyncForEach(devices, async (device) => {
 		  try {
-			  //const states = await doExecute(userId, device.id, execution[0]);
+			  const states = await doExecute(userId, device.id, execution[0]);
 			  commands[0].ids.push(device.id);
-			  //commands[0].states = states;
+			  commands[0].states = {
+					on: state[0].running,
+					online: true
+				};
 			  // Report state back to Homegraph
 			  app.reportState({
 				  agentUserId: userId,
@@ -239,7 +242,7 @@ app.onExecute(async (body, headers) => {
 				  payload: {
 					  devices: {
 						  states: {
-							  //[device.id]: states,
+							  [device.id]: commands[0].states,
 						  },
 					  },
 				  },
@@ -276,7 +279,6 @@ function doExecute(userId, deviceId, execution){
 				var filtered = result.filter(function (el) {
 					return el != null;
 				});
-				console.log(JSON.stringify(filtered, null, 4));
 				resolve(filtered);
 			}
 		})
