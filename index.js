@@ -187,7 +187,11 @@ app.onQuery(async (body, headers) => {
 const doCheck = async (userId, deviceId) => {
 	var dbo = await initDBConnection();
 	const doc = await dbo.collection("status").find({_id: deviceId}).count();
-	console.log("olo : " + doc);
+	if(doc == 0){
+		throw new Error('deviceNotFound');
+	}else{
+		return await dbo.collection("status");
+	}
 }
   
 app.onDisconnect((body, headers) => {
