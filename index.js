@@ -151,13 +151,15 @@ app.onSync(async (body, headers) => {
 	//const userEmail = "sanjeet.pathak990@gmail.com";
 	var promisePrepare = prepareDeviceData(userEmail);
 	promisePrepare.then(function(deviceData){
-		return {
+		var data = {
 			requestId: body.requestId,
 			payload: {
 			  agentUserId: userEmail,
 			  deviceData
 			}
-		  }
+		  };
+		  console.log(JSON.stringify(data, null, 4));
+		  return data;
 	}, function(error){
 		return {
 			requestId: body.requestId,
@@ -165,7 +167,7 @@ app.onSync(async (body, headers) => {
 			  agentUserId: userEmail,
 			  devices: []
 			}
-		  }
+		  };
 	});
 });
 
