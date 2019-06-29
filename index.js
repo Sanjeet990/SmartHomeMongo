@@ -218,53 +218,15 @@ app.onDisconnect((body, headers) => {
 app.onExecute(async (body, headers) => {
 	const userId = await getEmail(headers);
 	
-	const commands = [{
-	  ids: [],
-	  status: 'SUCCESS',
-	  states: {},
-	}];
-	
 	const { devices, execution } = body.inputs[0].payload.commands[0];
-	
-	const start = async () => {
-	  await asyncForEach(devices, async (device) => {
-		  try {
-			  const states = await doExecute(userId, device.id, execution[0]);
-			  commands[0].ids.push(device.id);
-			  commands[0].states = {
-					on: state[0].running,
-					online: true
-				};
-			  // Report state back to Homegraph
-			  app.reportState({
-				  agentUserId: userId,
-				  requestId: body.requestId,
-				  payload: {
-					  devices: {
-						  states: {
-							  [device.id]: commands[0].states,
-						  },
-					  },
-				  },
-			  });
-		  }
-		  catch (e) {
-			  commands.push({
-				  ids: [device.id],
-				  status: 'ERROR',
-				  errorCode: e.message,
-			  });
-		  }
-	  });	  
-	} 
-	await start();
-	
-	data = {
-		  requestId: body.requestId,
-		  payload: {
-			  commands,
-		  },
-	};
+	devices = await devices.filter(function (el) {
+		return el != null;
+	});
+
+	await asyncForEach(devices, async (device) => {
+		console.log(device);
+	});
+		  
 	console.log(JSON.stringify(data, null, 4));
 });
 
