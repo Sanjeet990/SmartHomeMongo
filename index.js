@@ -240,8 +240,8 @@ function doExecute(userId, deviceId, execution, dbo){
 			if (err){
 				reject(err);
 			}else{
-				var newvalues = { $set: {running: false } };
-				dbo.collection("status").findOneAndUpdate("pop", newvalues, {upsert:true,strict: false});
+				var newvalues = { $set: {_id: deviceId, running: false } };
+				dbo.collection("status").findOneAndUpdate(newvalues, {upsert:true,strict: false});
 				resolve(dbo.collection("status").find(query).toArray());
 			}
 		})
