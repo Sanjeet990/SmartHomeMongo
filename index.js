@@ -285,7 +285,7 @@ function doExecute(userId, deviceId, execution, dbo){
 						break;
 					// action.devices.traits.OpenClose
 					default:
-						reject(new Error('actionNotAvailable'));
+						reject(new Error('actionNotAvailable' + execution.command));
 				}
 			}
 		})
