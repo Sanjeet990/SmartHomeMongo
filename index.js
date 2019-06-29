@@ -76,15 +76,20 @@ app.onSync(async (body, headers) => {
 				}
 			}else{
 				//User found. Proceed returning the user devices
+				console.log("Step 1");
 				var devices = result[0].devices;
 				const start = async () => {
 					await asyncForEach(devices, async (device) => {
+						console.log("Step 2");
 						var query = { _id: device };
 						await dbo.collection("devices").find(query).toArray(async function(err, deviceList) {
+							console.log("Step 3");
 							if (err) throw err;
 							await asyncForEach(deviceList, async (singleDevice) => {
+								console.log("Step 4");
 								var subDevices = singleDevice.subDevices;
 								await asyncForEach(subDevices, async (data) => {
+									console.log("Step 5");
 									const deviceData = {
 										"id": data.id,
 										"type": data.type,
@@ -108,6 +113,7 @@ app.onSync(async (body, headers) => {
 										}
 									};
 									await userDevices.push(deviceData);
+									console.log("Step 6");
 									//db.close();
 								});
 								
@@ -115,8 +121,10 @@ app.onSync(async (body, headers) => {
 						});
 					});
 				} 
+				console.log("Step 7");
 				await start();
-						
+				console.log("Step 8");
+					
 				//method end. Time to return good things back
 				var response = {
 					requestId: body.requestId,
@@ -127,6 +135,8 @@ app.onSync(async (body, headers) => {
 				}
 				
 				console.log(JSON.stringify(response, null, 4));
+				console.log("Step 9");
+				
 				return response;//console.log(JSON.stringify(userDevices, null, 4));
 			}
 		});
