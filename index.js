@@ -215,7 +215,7 @@ app.onExecute(async (body, headers) => {
 	const start = async () => {
 	  await asyncForEach(devices, async (device) => {
 		  try {
-			  const states = await doExecute(userId, device.id, execution[0]);
+			  //const states = await doExecute(userId, device.id, execution[0]);
 			  commands[0].ids.push(device.id);
 			  commands[0].states = states;
 			  // Report state back to Homegraph
@@ -225,7 +225,7 @@ app.onExecute(async (body, headers) => {
 				  payload: {
 					  devices: {
 						  states: {
-							  [device.id]: states,
+							  //[device.id]: states,
 						  },
 					  },
 				  },
@@ -253,7 +253,7 @@ app.onExecute(async (body, headers) => {
 const doExecute = async (userId, deviceId, execution) => {
 	
     if (!userId) {
-        throw new Error('deviceNotFound' + deviceId);
+        throw new Error('deviceNotFound');
 	}
 	
     const states = {
@@ -262,18 +262,6 @@ const doExecute = async (userId, deviceId, execution) => {
 	
 	var dbo = await initDBConnection();
 
-	switch (execution.command) {
-		// action.devices.traits.ArmDisarm
-		case 'action.devices.commands.OnOff':
-			//await db.collection('users').doc(userId).collection('devices').doc(deviceId).update({
-			//	'states.on': execution.params.on,
-			//});
-			states['on'] = execution.params.on;
-			break;
-			// action.devices.traits.OpenClose
-		default:
-			throw new Error('actionNotAvailable');
-	}
 
     return states;
 }
