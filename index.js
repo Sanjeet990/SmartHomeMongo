@@ -171,7 +171,14 @@ app.onQuery(async (body, headers) => {
 			  });
 		} 
 		await start();
-		
+		const myObject = {
+			  requestId: body.requestId,
+			  payload: {
+				devices: deviceStates,
+			  },
+			};
+		console.log(JSON.stringify(myObject, null, 4));
+		return myObject;
 	}catch(e){
 	  console.log(e.getmessage);
 	}
@@ -179,12 +186,7 @@ app.onQuery(async (body, headers) => {
 
 const doCheck = async (userId, deviceId) => {
 	var dbo = await initDBConnection();
-	const doc = await dbo.collection("status").find({_id: deviceId}).count();
-	if (doc < 1) {
-	  throw new Error('deviceNotFound' + deviceId);
-	}else{
-	  return dbo.collection("status");
-	}
+	
 }
   
 app.onDisconnect((body, headers) => {
