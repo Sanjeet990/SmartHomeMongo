@@ -224,9 +224,9 @@ app.onExecute(async (body, headers) => {
 	});
 
 	await asyncForEach(fineDevices, async (device) => {
-		console.log(device);
+		await doExecute(userId, device, execution);
 	});
-		  
+	
 	console.log(JSON.stringify(data, null, 4));
 });
 
@@ -241,7 +241,13 @@ function doExecute(userId, deviceId, execution){
 				var filtered = result.filter(function (el) {
 					return el != null;
 				});
-				resolve(filtered);
+				if(filtered.length > 0){
+					var query = { _id: deviceId };
+					var newvalues = { $set: {running: false } };
+					dbo.collection("status").updateOne(query, newvalues, function(err, res) {
+						resolve(newvalues);
+					});
+				}
 			}
 		})
     })
