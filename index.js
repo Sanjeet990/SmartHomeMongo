@@ -263,6 +263,7 @@ const doExecute = async (userId, deviceId, execution) => {
 	var promiseMongo = initDBConnection();
 
 	promiseMongo.then(function(dbo){
+		console.log("Connected to mongo instance");
 		if(dbo.collection("status").find({_id: deviceId}).count() < 1){
 			var newstatus = { _id: deviceId, lastonline: "Highway 37", running: true };
 			dbo.collection("status").insertOne(newstatus, function(err, res) {
