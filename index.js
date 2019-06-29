@@ -1,5 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+var MongoClient = require('mongodb').MongoClient;
+
+var url = "mongodb://marswavehome.tk:27017/smarthome";
 
 const admin = require('firebase-admin');
 
@@ -25,6 +28,11 @@ async function asyncForEach(array, callback) {
 
 const functions = require('firebase-functions');
 
+const {smarthome} = require('actions-on-google');
+const app = smarthome({
+  jwt: require('./secrets.json')
+});
+
 const getEmail = async (headers) => {
   const accessToken = headers.authorization.substr(7);
   const {email} = await auth0.getProfile(accessToken);
@@ -34,12 +42,125 @@ const getEmail = async (headers) => {
 db.settings({timestampsInSnapshots: true});
 
 var port = process.env.PORT || 3000;
-app = express();
 
-app.get('/', async function (req, res) {
-  const data = "";
-  const state = await doCheck("sanjeet.pathak990@gmail.com", "Device 1");
-  res.send("Hello worldx " + JSON.stringify(state, null, 4));
+app.onSync(async (body, headers) => {
+	const userEmail = await getEmail(headers);
+	const userDevices = [];
+	MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
+		
+		if (err){
+			return {
+				//requestId: body.requestId,
+				payload: {
+					agentUserId: userEmail,
+					userDevices
+				}
+			}
+		}
+		
+		//select the database
+		var dbo = db.db("smarthome");
+		//check if user exists
+		var query = { _id: userEmail };
+		dbo.collection("users").find(query).toArray(function(err, result) {
+			if (err) throw err;
+			if(result[0]._id != userEmail){
+				//user not found! No device in the database
+				return {
+				  //requestId: body.requestId,
+				  payload: {
+					agentUserId: userEmail,
+					userDevices
+				  }
+				}
+			}else{
+				//User found. Proceed returning the user devices
+				var devices = result[0].devices;
+				const start = async () => {
+					await asyncForEach(devices, async (device) => {
+						var query = { _id: device };
+						dbo.collection("devices").find(query).toArray(async function(err, deviceList) {
+							if (err) throw err;
+							await asyncForEach(deviceList, async (singleDevice) => {
+								var subDevices = singleDevice.subDevices;
+								await asyncForEach(subDevices, async (data) => {
+									const deviceData = {
+										"id": data.id,
+										"type": data.type,
+										"traits": [data.traits],
+										"name": {
+										  "defaultNames": [data.defaultNames],
+										  "name": data.name,
+										  "nicknames": [data.nicknames]
+										},
+										"willReportState": false,
+										"deviceInfo": {
+										  "manufacturer": data.manufacturer,
+										  "model": data.model,
+										  "hwVersion": data.hwVersion,
+										  "swVersion": data.swVersion
+										},
+										"customData": {
+										  "fooValue": 74,
+										  "barValue": true,
+										  "bazValue": "foo"
+										}
+									};
+									userDevices.push(deviceData);
+									//db.close();
+								});
+								
+							});
+						});
+					});
+				} 
+				start();
+				//console.log(JSON.stringify(userDevices, null, 4));
+			}
+		});
+		//method end. Time to return good things back
+		return {
+	//		requestId: body.requestId,
+			payload: {
+			  agentUserId: userEmail,
+			  userDevices
+			}
+		}
+	});
+});
+
+app.onQuery(async (body, headers) => {
+  // TODO Get device state
+  try{
+	  const userId = await getEmail(headers);
+	  const { devices } = body.inputs[0].payload;
+	  const deviceStates = {};
+	  
+	  const start = async () => {
+		  await asyncForEach(devices, async (device) => {
+			const state = await doCheck(userId, device.id);
+			deviceStates[device.id] = state;
+			});
+		  
+	  } 
+	  await start();
+	  const myObject = {
+			requestId: body.requestId,
+			payload: {
+			  devices: deviceStates,
+			},
+		  };
+	  //console.log(JSON.stringify(myObject, null, 4));
+	  return myObject;
+  }catch(e){
+	console.log(e.getmessage);
+  }
+});
+
+app.onDisconnect((body, headers) => {
+  // TODO Disconnect user account from Google Assistant
+  // You can return an empty body
+  return {};
 });
 
 const doCheck = async (userId, deviceId) => {
@@ -51,8 +172,31 @@ const doCheck = async (userId, deviceId) => {
 	  }
 }
 
-app.get('/update', function (req, res) {
-    
-});
+const doExecute = async (userId, deviceId, execution) => {
+        const doc = await db.collection('users').doc(userId).collection('devices').doc(deviceId).get();
+        if (!doc.exists) {
+            throw new Error('deviceNotFound' + deviceId);
+        }
+        const states = {
+            online: true,
+        };
+        const data = doc.data();
+        if (!data.states.online) {
+            throw new Error('deviceOffline');
+        }
+        switch (execution.command) {
+            // action.devices.traits.ArmDisarm
+            case 'action.devices.commands.OnOff':
+                await db.collection('users').doc(userId).collection('devices').doc(deviceId).update({
+                    'states.on': execution.params.on,
+                });
+                states['on'] = execution.params.on;
+                break;
+            // action.devices.traits.OpenClose
+            default:
+                throw new Error('actionNotAvailable');
+        }
+        return states;
+}
 
-app.listen(port, () => console.log(`App listening on port ${port}!`))
+express().use(bodyParser.json(), app).listen(port);
