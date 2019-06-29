@@ -173,7 +173,7 @@ function prepareDeviceData(userEmail){
 
 app.onSync((body, headers) => {
 	// TODO Get devices for user
-	return {
+	var data = {
 	  requestId: body.requestId,
 	  payload: {
 		agentUserId: "1836.15267389",
@@ -238,6 +238,9 @@ app.onSync((body, headers) => {
 		}]
 	  }
 	};
+	console.log(JSON.stringify(data, null, 4));
+				
+	return data;
   });
 
 app.onQuery(async (body, headers) => {
