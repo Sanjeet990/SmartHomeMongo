@@ -190,7 +190,7 @@ const doCheck = async (userId, deviceId) => {
 	if(doc == 0){
 		throw new Error('deviceNotFound');
 	}else{
-		return await dbo.collection("status");
+		//return await dbo.collection("status");
 	}
 }
   
