@@ -98,27 +98,75 @@ function findSubDevices(devices, dbo){
     })
 }
 
+function prepareDeviceData(userEmail){
+	return new Promise(function(resolve, reject) {
+		const userDevices = [];
+		
+		var promiseMongo = initDBConnection();
+
+		promiseMongo.then(function(dbo){
+			console.log("Connected to mongo database. " + dbo.domain);
+			findDevices(userEmail, dbo).then(function(devices){
+				findSubDevices(devices, dbo).then(function(subDevice){
+					subDevice.forEach(data => {	
+						const deviceData = {
+							"id": data.id,
+							"type": data.type,
+							"traits": [data.traits],
+							"name": {
+							"defaultNames": [data.defaultNames],
+							"name": data.name,
+							"nicknames": [data.nicknames]
+							},
+							"willReportState": false,
+							"deviceInfo": {
+							"manufacturer": data.manufacturer,
+							"model": data.model,
+							"hwVersion": data.hwVersion,
+							"swVersion": data.swVersion
+							},
+							"customData": {
+							"fooValue": 74,
+							"barValue": true,
+							"bazValue": "foo"
+							}
+						};
+						userDevices.push(deviceData);
+					});
+					resolve(userDevices);
+				}, function(error){
+					reject("Error: " + error);
+				})
+			}, function(error){
+				reject("Error: " + error);
+			})
+		}, function(error){
+			reject("Can not connect to database.");
+		})	
+	})
+}
+
 app.onSync(async (body, headers) => {
 	const userEmail = await getEmail(headers);
 	//const userEmail = "sanjeet.pathak990@gmail.com";
-	const userDevices = [];
-	
-	var promiseMongo = initDBConnection();
-
-	promiseMongo.then(function(dbo){
-		console.log("Connected to mongo database. " + dbo.domain);
-		findDevices(userEmail, dbo).then(function(devices){
-			findSubDevices(devices, dbo).then(function(subDevice){
-				console.log("Success: " + subDevice[0].name);
-			}, function(error){
-				console.log("Error: " + error);
-			})
-		}, function(error){
-			console.log("Error: " + error);
-		})
+	var promisePrepare = prepareDeviceData(userEmail);
+	promisePrepare.then(function(deviceData){
+		return {
+			requestId: body.requestId,
+			payload: {
+			  agentUserId: userEmail,
+			  deviceData
+			}
+		  }
 	}, function(error){
-		console.log("Can not connect to database.");
-	})
+		return {
+			requestId: body.requestId,
+			payload: {
+			  agentUserId: userEmail,
+			  devices: []
+			}
+		  }
+	});
 });
 
 
