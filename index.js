@@ -114,21 +114,16 @@ function prepareDeviceData(userEmail){
 							"type": data.type,
 							"traits": [data.traits],
 							"name": {
-							"defaultNames": [data.defaultNames],
-							"name": data.name,
-							"nicknames": [data.nicknames]
+								"defaultNames": [data.defaultNames],
+								"name": data.name,
+								"nicknames": [data.nicknames]
 							},
 							"willReportState": false,
 							"deviceInfo": {
-							"manufacturer": data.manufacturer,
-							"model": data.model,
-							"hwVersion": data.hwVersion,
-							"swVersion": data.swVersion
-							},
-							"customData": {
-							"fooValue": 74,
-							"barValue": true,
-							"bazValue": "foo"
+								"manufacturer": "Marswave SmartHome",
+								"model": data.model,
+								"hwVersion": data.hwVersion,
+								"swVersion": data.swVersion
 							}
 						};
 						devices.push(deviceData);
@@ -151,12 +146,12 @@ app.onSync(async (body, headers) => {
 	//const userEmail = "sanjeet.pathak990@gmail.com";
 	var devices = await prepareDeviceData(userEmail);
 	var data = {
-			requestId: body.requestId,
-			payload: {
+		requestId: body.requestId,
+		payload: {
 			  agentUserId: userEmail,
 			  devices
-			}
-		  };
+		}
+	};
 	console.log(JSON.stringify(data, null, 4));
 	return data;
 });
