@@ -82,43 +82,7 @@ app.onSync(async (body, headers) => {
 					await asyncForEach(devices, async (device) => {
 						console.log("Step 2");
 						var query = { _id: device };
-						dbo.collection("devices").find(query).toArray(function(err, deviceList) {
-							console.log("Step 3");
-							if (err) throw err;
-							asyncForEach(deviceList, (singleDevice) => {
-								console.log("Step 4");
-								var subDevices = singleDevice.subDevices;
-								asyncForEach(subDevices, (data) => {
-									console.log("Step 5");
-									const deviceData = {
-										"id": data.id,
-										"type": data.type,
-										"traits": [data.traits],
-										"name": {
-										  "defaultNames": [data.defaultNames],
-										  "name": data.name,
-										  "nicknames": [data.nicknames]
-										},
-										"willReportState": false,
-										"deviceInfo": {
-										  "manufacturer": data.manufacturer,
-										  "model": data.model,
-										  "hwVersion": data.hwVersion,
-										  "swVersion": data.swVersion
-										},
-										"customData": {
-										  "fooValue": 74,
-										  "barValue": true,
-										  "bazValue": "foo"
-										}
-									};
-									userDevices.push(deviceData);
-									console.log("Step 6");
-									//db.close();
-								});
-								
-							});
-						});
+						console.log("stepx");
 					});
 				} 
 				console.log("Step 7");
