@@ -233,7 +233,7 @@ app.onExecute(async (body, headers) => {
 
 	await asyncForEach(fineDevices, async (device) => {
 		try{
-			var state = await doExecute(userId, device.id, execution, dbo);
+			var state = await doExecute(userId, device.id, execution[0], dbo);
 			commands[0].ids.push(device.id);
 			commands[0].states = {
 				on: state[0].running,
