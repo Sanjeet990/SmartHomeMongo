@@ -236,7 +236,7 @@ function doExecute(userId, deviceId, execution, dbo){
 	return new Promise(function(resolve, reject) {
 		// Query database
 		var query = { _id: deviceId };
-		dbo.collection("status").find(query).limit(1).count(function(err, result) {
+		dbo.collection("status").find(query).toArray(function(err, result) {
 			if (err){
 				reject(err);
 			}else{
