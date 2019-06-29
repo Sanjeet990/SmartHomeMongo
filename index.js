@@ -187,7 +187,7 @@ app.onQuery(async (body, headers) => {
 const doCheck = async (userId, deviceId) => {
 	var dbo = await initDBConnection();
 	const doc = await dbo.collection("status").find({_id: deviceId}).count();
-	
+	console.log("olo : " + doc);
 }
   
 app.onDisconnect((body, headers) => {
