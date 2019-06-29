@@ -45,41 +45,30 @@ db.settings({timestampsInSnapshots: true});
 
 var port = process.env.PORT || 3000;
 
+function initDBConnection(){
+	return new Promise(function(resolve, reject) {
+		// Connect to database
+		MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
+			if (err) {
+                reject(err);
+            } else {
+				var dbo = db.db("smarthome");
+                resolve(dbo);
+            }
+		})
+    })
+}
+
 app.onSync(async (body, headers) => {
 	const userEmail = await getEmail(headers);
 	const userDevices = [];
-	MongoClient.connect(url, { useNewUrlParser: true })
-	.then(function(err, db) {
-		if (err){
-			return {
-				requestId: body.requestId,
-				payload: {
-					agentUserId: userEmail,
-					userDevices
-				}
-			}
-		}
-		var dbo = db.db("smarthome");
-		//check if user exists
-		var query = { _id: userEmail };
-		console.log("Awesome");
-		dbo.collection("users").find(query).toArray().then(function(err, result) {
-			//whether user is in db
-			if (err) throw err;
-			if(result[0]._id != userEmail){
-				console.log("User not found : " + userEmail);
-				//user not found! No device in the database
-				return {
-				  requestId: body.requestId,
-				  payload: {
-					agentUserId: userEmail,
-					userDevices
-				  }
-				}
-			}else{
-				console.log("User found : " + userEmail);
-			}
-		});
+	
+	var promiseMongo = initDBConnection();
+
+	promiseMongo.then(function(dbo){
+		console.log("Connected to mongo database. " + dbo);
+	}, function(error){
+		console.log("Can not connect to database.");
 	});
 });
 
