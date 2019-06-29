@@ -152,10 +152,9 @@ app.onSync(async (body, headers) => {
 			  devices
 		}
 	};
-	console.log(JSON.stringify(data, null, 4));
+	//console.log(JSON.stringify(data, null, 4));
 	return data;
 });
-
 
 app.onQuery(async (body, headers) => {
   // TODO Get device state
@@ -200,31 +199,99 @@ const doCheck = async (userId, deviceId) => {
 	  }
 }
 
+
+
+app.onExecute(async (body, headers) => {
+	const userId = await getEmail(headers);
+	
+	const commands = [{
+	  ids: [],
+	  status: 'SUCCESS',
+	  states: {},
+	}];
+	
+	const { devices, execution } = body.inputs[0].payload.commands[0];
+	
+	const start = async () => {
+	  await asyncForEach(devices, async (device) => {
+		  try {
+			  const states = await doExecute(userId, device.id, execution[0]);
+			  commands[0].ids.push(device.id);
+			  commands[0].states = states;
+			  // Report state back to Homegraph
+			  app.reportState({
+				  agentUserId: userId,
+				  requestId: body.requestId,
+				  payload: {
+					  devices: {
+						  states: {
+							  [device.id]: states,
+						  },
+					  },
+				  },
+			  });
+		  }
+		  catch (e) {
+			  commands.push({
+				  ids: [device.id],
+				  status: 'ERROR',
+				  errorCode: e.message,
+			  });
+		  }
+	  });	  
+	} 
+	await start();
+	
+	return {
+		  requestId: body.requestId,
+		  payload: {
+			  commands,
+		  },
+	};
+});
+    
 const doExecute = async (userId, deviceId, execution) => {
-        const doc = await db.collection('users').doc(userId).collection('devices').doc(deviceId).get();
-        if (!doc.exists) {
-            throw new Error('deviceNotFound' + deviceId);
-        }
-        const states = {
-            online: true,
-        };
-        const data = doc.data();
-        if (!data.states.online) {
-            throw new Error('deviceOffline');
-        }
-        switch (execution.command) {
-            // action.devices.traits.ArmDisarm
-            case 'action.devices.commands.OnOff':
-                await db.collection('users').doc(userId).collection('devices').doc(deviceId).update({
-                    'states.on': execution.params.on,
-                });
-                states['on'] = execution.params.on;
-                break;
+	const userId = await getEmail(headers);
+	
+    if (!userId) {
+        throw new Error('deviceNotFound' + deviceId);
+	}
+	
+    const states = {
+        online: true,
+	};
+	
+	var promiseMongo = initDBConnection();
+
+	promiseMongo.then(function(dbo){
+		if(dbo.collection("status").find({_id: deviceId}).count() < 1){
+			var newstatus = { _id: deviceId, lastonline: "Highway 37", running: true };
+			dbo.collection("status").insertOne(newstatus, function(err, res) {
+				if (err) throw err;
+				console.log("1 document inserted");
+			});
+		}
+	}, function(error){
+
+	});
+
+    const data = doc.data();
+    if (!data.states.online) {
+        throw new Error('deviceOffline');
+    }
+    switch (execution.command) {
+        // action.devices.traits.ArmDisarm
+        case 'action.devices.commands.OnOff':
+            await db.collection('users').doc(userId).collection('devices').doc(deviceId).update({
+                'states.on': execution.params.on,
+            });
+            states['on'] = execution.params.on;
+            break;
             // action.devices.traits.OpenClose
-            default:
-                throw new Error('actionNotAvailable');
-        }
-        return states;
+        default:
+            throw new Error('actionNotAvailable');
+    }
+    return states;
 }
 
 express().use(bodyParser.json(), app).listen(port);
