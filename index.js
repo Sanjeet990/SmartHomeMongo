@@ -226,7 +226,7 @@ app.onExecute(async (body, headers) => {
 	});
 
 	await asyncForEach(fineDevices, async (device) => {
-		var data = await doExecute(userId, device, execution, dbo);
+		var data = await doExecute(userId, device.id, execution, dbo);
 		console.log(JSON.stringify(data, null, 4));
 	});
 	
@@ -240,8 +240,8 @@ function doExecute(userId, deviceId, execution, dbo){
 			if (err){
 				reject(err);
 			}else{
-				var newvalues = { $set: {_id: deviceId, running: false } };
-				dbo.collection("status").findOneAndUpdate(newvalues, {upsert:true,strict: false});
+				var newvalues = { $set: {running: false } };
+				dbo.collection("status").findOneAndUpdate(query, newvalues, {upsert:true,strict: false});
 				resolve(dbo.collection("status").find(query).toArray());
 			}
 		})
