@@ -14,15 +14,6 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
 
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : new P(function (resolve) { resolve(result.value); }).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-
 let db = admin.firestore();
 
 const {AuthenticationClient} = require('auth0');
@@ -44,117 +35,142 @@ const app = smarthome({
   jwt: require('./secrets.json')
 });
 
-function getEmail(headers){
-	return __awaiter(this, void 0, void 0, function* () {
-		const accessToken = headers.authorization.substr(7);
-		const email = yield auth0.getProfile(accessToken);
-		return email;
-	});
+const getEmail = async (headers) => {
+  const accessToken = headers.authorization.substr(7);
+  const {email} = await auth0.getProfile(accessToken);
+  return email;
 }
 
 db.settings({timestampsInSnapshots: true});
 
 var port = process.env.PORT || 3000;
 
-function initDBConnection() {
+function initDBConnection(){
+	return new Promise(function(resolve, reject) {
 		// Connect to database
-	return __awaiter(this, void 0, void 0, function* () {
-		yield MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
+		MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
 			if (err) {
-				return "";
-			} else {
-				return db.db("smarthome");
-			}
+                reject(err);
+            } else {
+				var dbo = db.db("smarthome");
+                resolve(dbo);
+            }
 		})
-	})
+    })
 }
 
 function findDevices(userEmail, dbo){
-	return __awaiter(this, void 0, void 0, function* () {
+	return new Promise(function(resolve, reject) {
+		// Query database
 		var query = { _id: userEmail };
-		var filteredx = [];
-		yield dbo.collection("users").find(query).toArray(function(err, result) {
+		dbo.collection("users").find(query).toArray(function(err, result) {
 			if (err){
-				return "";
+				reject(err);
 			}else{
 				var filtered = result[0].devices.filter(function (el) {
 					return el != null;
 				});
-				filteredx = filtered;
+				resolve(filtered);
 			}
 		})
-		return filteredx;
-	})
+    })
 }
 
-function findSubDevices(devices){
-	// Query database by iterating over
-	return __awaiter(this, void 0, void 0, function* () {
+function findSubDevices(devices, dbo){
+	return new Promise(function(resolve, reject) {
+		// Query database by iterating over
 		var subDevices = [];
-		yield devices.forEach(async (device) => {
+		devices.forEach(device => {
 			var query = { _id: device };
-			yield dbo.collection("devices").find(query).toArray(function(err, result) {
-				yield result.forEach(subDevice => {
+			dbo.collection("devices").find(query).toArray(function(err, result) {
+				result.forEach(subDevice => {
 					if (err){
-						return "";
+						reject(err);
 					}else{
 						var filtered = result[0].subDevices.filter(function (el) {
 							return el != null;
 						});
-						return filtered;
+						resolve(filtered);
 					}
 				});
 			})
 		});
-	});
+    })
 }
 
 function prepareDeviceData(userEmail){
-	return __awaiter(this, void 0, void 0, function* () {
-		var devices = [];
-		const devicex = yield findDevices(userEmail, dbo);
-		const subDevice = yield	findSubDevices(devicex, dbo);
-		yield subDevice.forEach(data => {	
-					const deviceData = {
-						"id": data.id,
-						"type": data.type,
-						"traits": [data.traits],
-						"name": {
-						"defaultNames": [data.defaultNames],
-						"name": data.name,
-						"nicknames": [data.nicknames]
-						},
-						"willReportState": false,
-						"deviceInfo": {
-						"manufacturer": data.manufacturer,
-						"model": data.model,
-						"hwVersion": data.hwVersion,
-						"swVersion": data.swVersion
-						},
-						"customData": {
-						"fooValue": 74,
-						"barValue": true,
-						"bazValue": "foo"
-						}
-					};
-					devices.push(deviceData);
-		});
-		return devices;
-	});
+	return new Promise(function(resolve, reject) {
+		const devices = [];
+		
+		var promiseMongo = initDBConnection();
+
+		promiseMongo.then(function(dbo){
+			console.log("Connected to mongo database. " + dbo.domain);
+			findDevices(userEmail, dbo).then(function(devicex){
+				findSubDevices(devicex, dbo).then(function(subDevice){
+					subDevice.forEach(data => {	
+						const deviceData = {
+							"id": data.id,
+							"type": data.type,
+							"traits": [data.traits],
+							"name": {
+							"defaultNames": [data.defaultNames],
+							"name": data.name,
+							"nicknames": [data.nicknames]
+							},
+							"willReportState": false,
+							"deviceInfo": {
+							"manufacturer": data.manufacturer,
+							"model": data.model,
+							"hwVersion": data.hwVersion,
+							"swVersion": data.swVersion
+							},
+							"customData": {
+							"fooValue": 74,
+							"barValue": true,
+							"bazValue": "foo"
+							}
+						};
+						devices.push(deviceData);
+					});
+					resolve(devices);
+				}, function(error){
+					reject("Error: " + error);
+				})
+			}, function(error){
+				reject("Error: " + error);
+			})
+		}, function(error){
+			reject("Can not connect to database.");
+		})	
+	})
 }
 
-app.onSync((body, headers) => __awaiter(this, void 0, void 0, function* () {
-    const userId = yield getEmail(headers);
-    yield MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
-		if (err) {
-			return "";
-		} else {
-			dbo = db.db("smarthome");
-			const devicex = yield findDevices(userEmail, dbo);
-			console.log(JSON.stringify(devicex, null, 4));
-		}
-	})
-}));
+app.onSync(async (body, headers) => {
+	const userEmail = await getEmail(headers);
+	//const userEmail = "sanjeet.pathak990@gmail.com";
+	var promisePrepare = prepareDeviceData(userEmail);
+	promisePrepare.then(function(devices){
+		var data = {
+			requestId: body.requestId,
+			payload: {
+			  agentUserId: userEmail,
+			  devices
+			}
+		  };
+		  console.log(devices.resolve);
+		  return data;
+	}, function(error){
+		return {
+			requestId: body.requestId,
+			payload: {
+			  agentUserId: userEmail,
+			  devices: []
+			}
+		  };
+	});
+});
+
 
 app.onQuery(async (body, headers) => {
   // TODO Get device state
