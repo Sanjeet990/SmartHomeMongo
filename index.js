@@ -169,6 +169,10 @@ app.onSync(async (body, headers) => {
 			}
 		  };
 	});
+}).then((res) => {
+	console.log("Success : " + res);
+}).catch((res) => {
+	console.log("Failed : " + res);
 });
 
 
