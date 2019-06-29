@@ -1,5 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+var Promise = require('promise');
+
 var MongoClient = require('mongodb').MongoClient;
 
 var url = "mongodb://marswavehome.tk:27017/smarthome";
@@ -46,8 +48,8 @@ var port = process.env.PORT || 3000;
 app.onSync(async (body, headers) => {
 	const userEmail = await getEmail(headers);
 	const userDevices = [];
-	await MongoClient.connect(url, { useNewUrlParser: true }, async function(err, db) {
-		
+	MongoClient.connect(url, { useNewUrlParser: true })
+	.then(async function(err, db) {
 		if (err){
 			return {
 				requestId: body.requestId,
@@ -57,15 +59,15 @@ app.onSync(async (body, headers) => {
 				}
 			}
 		}
-		
-		//select the database
 		var dbo = db.db("smarthome");
 		//check if user exists
 		var query = { _id: userEmail };
-		await dbo.collection("users").find(query).toArray(async function(err, result) {
+		
+		dbo.collection("users").find(query).toArray().then(function(err, result) {
+			//whether user is in db
 			if (err) throw err;
 			if(result[0]._id != userEmail){
-				console.log("User not found" + userEmail);
+				console.log("User not found : " + userEmail);
 				//user not found! No device in the database
 				return {
 				  requestId: body.requestId,
@@ -75,75 +77,7 @@ app.onSync(async (body, headers) => {
 				  }
 				}
 			}else{
-				//User found. Proceed returning the user devices
-				console.log("Step 1");
-				var devices = result[0].devices;
-				
-				//Find devices
-				const deviceFind = async(device) => {
-					var query = { _id: device };	
-					await dbo.collection("devices").find(query).toArray(async function(err, deviceList) {
-						console.log("Step 3");
-						if (err) throw err;
-						await asyncForEach(deviceList, async(singleDevice) => {
-						console.log("Step 4");
-							var subDevices = singleDevice.subDevices;
-							asyncForEach(subDevices, (data) => {
-								console.log("Step 5");
-								const deviceData = {
-									"id": data.id,
-									"type": data.type,
-									"traits": [data.traits],
-									"name": {
-									  "defaultNames": [data.defaultNames],
-									  "name": data.name,
-									  "nicknames": [data.nicknames]
-									},
-									"willReportState": false,
-									"deviceInfo": {
-									  "manufacturer": data.manufacturer,
-									  "model": data.model,
-									  "hwVersion": data.hwVersion,
-									  "swVersion": data.swVersion
-									},
-									"customData": {
-									  "fooValue": 74,
-									  "barValue": true,
-									  "bazValue": "foo"
-									}
-								};
-								userDevices.push(deviceData);
-								console.log("Step 6");
-								//db.close();
-							});
-							
-						});
-					});
-				};
-				
-				const start = async () => {
-					devices.forEach(device => {
-						console.log("Step 2");
-						deviceFind(device);
-					});
-				} 
-				console.log("Step 7");
-				await start();
-				console.log("Step 8");
-					
-				//method end. Time to return good things back
-				var response = {
-					requestId: body.requestId,
-					payload: {
-					  agentUserId: userEmail,
-					  userDevices
-					}
-				}
-				
-				console.log(JSON.stringify(response, null, 4));
-				console.log("Step 9");
-				
-				return response;//console.log(JSON.stringify(userDevices, null, 4));
+				console.log("User found : " + userEmail);
 			}
 		});
 	});
