@@ -124,7 +124,7 @@ app.onSync(async (body, headers) => {
 				const start = async () => {
 					devices.forEach(device => {
 						console.log("Step 2");
-						await deviceFind(device);
+						deviceFind(device);
 					});
 				} 
 				console.log("Step 7");
