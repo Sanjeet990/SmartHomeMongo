@@ -240,7 +240,7 @@ function doExecute(userId, deviceId, execution, dbo){
 			if (err){
 				reject(err);
 			}else{
-				var newvalues = { $set: {running: false } };
+				var newvalues = { $set: {lastonline: new Date().getTime(), running: false } };
 				dbo.collection("status").findOneAndUpdate(query, newvalues, {upsert:true,strict: false});
 				resolve(dbo.collection("status").find(query).toArray());
 			}
