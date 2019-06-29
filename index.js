@@ -251,7 +251,6 @@ app.onExecute(async (body, headers) => {
 });
     
 const doExecute = async (userId, deviceId, execution) => {
-	const userId = await getEmail(headers);
 	
     if (!userId) {
         throw new Error('deviceNotFound' + deviceId);
