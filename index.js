@@ -59,7 +59,7 @@ function initDBConnection(){
     })
 }
 
-function userExists(userEmail){
+function userExists(userEmail, dbo){
 	return new Promise(function(resolve, reject) {
 		// Connect to database
 		var query = { _id: userEmail };
@@ -81,7 +81,7 @@ app.onSync(async (body, headers) => {
 
 	promiseMongo.then(function(dbo){
 		console.log("Connected to mongo database. " + dbo.domain);
-		userExists(dbo).then(function(success){
+		userExists(userEmail, dbo).then(function(success){
 			console.log("User ID: " + success);
 		}, function(error){
 			console.log("Error: " + error);
