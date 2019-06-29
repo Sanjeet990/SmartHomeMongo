@@ -163,10 +163,11 @@ app.onQuery(async (body, headers) => {
 		const userId = await getEmail(headers);
 		const { devices } = body.inputs[0].payload;
 		const deviceStates = {};
-		
+		var dbo = await initDBConnection();
+
 		const start = async () => {
 			await asyncForEach(devices, async (device) => {
-			  const state = await doCheck(userId, device.id);
+			  const state = await checkDevice(userId, device.id, dbo);
 			  deviceStates[device.id] = state;
 			  });
 		} 
@@ -184,15 +185,31 @@ app.onQuery(async (body, headers) => {
 	}
 });
 
+function checkDevice(userEmail, deviceID, dbo){
+	return new Promise(function(resolve, reject) {
+		// Query database
+		var query = { _id: deviceID };
+		dbo.collection("status").find(query).toArray(function(err, result) {
+			if (err){
+				reject(err);
+			}else{
+				var filtered = result[0].devices.filter(function (el) {
+					return el != null;
+				});
+				resolve(filtered);
+			}
+		})
+    })
+}
+
 const doCheck = async (userId, deviceId) => {
 	var dbo = await initDBConnection();
-	const doc = await dbo.collection("status").find({_id: deviceId}).count();
-	if(doc == 0){
+	const dataCount = await dbo.collection("status").find({_id: deviceId}).count();
+	if(dataCount == 0){
 		throw new Error('deviceNotFound');
-	}else{
-		var data = await dbo.collection("status").find({_id: deviceId});
-		console.log(JSON.stringify(data, null, 4));
 	}
+	var data = await dbo.collection("status").find({_id: deviceId});
+	console.log(JSON.stringify(data, null, 4));
 }
   
 app.onDisconnect((body, headers) => {
