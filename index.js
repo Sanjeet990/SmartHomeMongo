@@ -93,7 +93,7 @@ function prepareDeviceData(userEmail){
 		var promiseMongo = initDBConnection();
 
 		promiseMongo.then(function(dbo){
-			console.log("Connected to mongo database. " + dbo.domain);
+			//console.log("Connected to mongo database. " + dbo.domain);
 			findDevices(userEmail, dbo).then(function(devicex){
 				findSubDevices(devicex, dbo).then(function(subDevice){
 					subDevice.forEach(data => {	
