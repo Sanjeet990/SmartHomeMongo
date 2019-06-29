@@ -62,7 +62,7 @@ app.onSync(async (body, headers) => {
 		var dbo = db.db("smarthome");
 		//check if user exists
 		var query = { _id: userEmail };
-		dbo.collection("users").find(query).toArray(function(err, result) {
+		await dbo.collection("users").find(query).toArray(function(err, result) {
 			if (err) throw err;
 			if(result[0]._id != userEmail){
 				console.log("User not found" + userEmail);
