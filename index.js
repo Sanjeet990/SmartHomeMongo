@@ -235,7 +235,10 @@ app.onExecute(async (body, headers) => {
 		try{
 			var states = await doExecute(userId, device.id, execution, dbo);
 			commands[0].ids.push(device.id);
-			commands[0].states = states;
+			commands[0].states = {
+				on: state[0].running,
+				online: true
+			};
 			// Report state back to Homegraph
 			app.reportState({
 				agentUserId: userId,
@@ -243,7 +246,7 @@ app.onExecute(async (body, headers) => {
 				payload: {
 					devices: {
 						states: {
-							[device.id]: states,
+							[device.id]: commands[0].states,
 						},
 					},
 				},
