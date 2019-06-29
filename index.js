@@ -6,15 +6,7 @@ var MongoClient = require('mongodb').MongoClient;
 
 var url = "mongodb://marswavehome.tk:27017/smarthome";
 
-const admin = require('firebase-admin');
-
 let serviceAccount = require('./secrets.json');
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
-
-let db = admin.firestore();
 
 const {AuthenticationClient} = require('auth0');
 const auth0 = new AuthenticationClient({
@@ -28,8 +20,6 @@ async function asyncForEach(array, callback) {
   }
 }
 
-const functions = require('firebase-functions');
-
 const {smarthome} = require('actions-on-google');
 const app = smarthome({
   jwt: require('./secrets.json')
@@ -40,8 +30,6 @@ const getEmail = async (headers) => {
   const {email} = await auth0.getProfile(accessToken);
   return email;
 }
-
-db.settings({timestampsInSnapshots: true});
 
 var port = process.env.PORT || 3000;
 
@@ -185,10 +173,10 @@ app.onQuery(async (body, headers) => {
 				devices: deviceStates,
 			  },
 			};
-		console.log(JSON.stringify(myObject, null, 4));
+		//console.log(JSON.stringify(myObject, null, 4));
 		return myObject;
 	}catch(e){
-	  console.log(e.getmessage);
+	  //console.log(e.getmessage);
 	}
 });
 
