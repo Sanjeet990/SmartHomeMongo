@@ -239,7 +239,7 @@ app.onExecute(async (body, headers) => {
 				  payload: {
 					  devices: {
 						  states: {
-							  [device.id]: states,
+							  //[device.id]: states,
 						  },
 					  },
 				  },
