@@ -75,7 +75,6 @@ app.onSync(async (body, headers) => {
 				  }
 				}
 			}else{
-				console.log("User found" + userEmail);
 				//User found. Proceed returning the user devices
 				var devices = result[0].devices;
 				const start = async () => {
@@ -108,7 +107,7 @@ app.onSync(async (body, headers) => {
 										  "bazValue": "foo"
 										}
 									};
-									userDevices.push(deviceData);
+									await userDevices.push(deviceData);
 									//db.close();
 								});
 								
