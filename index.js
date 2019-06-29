@@ -49,7 +49,7 @@ app.onSync(async (body, headers) => {
 	const userEmail = await getEmail(headers);
 	const userDevices = [];
 	MongoClient.connect(url, { useNewUrlParser: true })
-	.then(async function(err, db) {
+	.then(function(err, db) {
 		if (err){
 			return {
 				requestId: body.requestId,
