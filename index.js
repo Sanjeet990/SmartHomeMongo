@@ -229,7 +229,6 @@ function prepareDeviceData(userEmail){
 			})
 		}, function(error){
 			reject("Can not connect to database.");
-			var dbo = await initDBConnection();
 		})	
 	})
 }
