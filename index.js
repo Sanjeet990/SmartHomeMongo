@@ -15,6 +15,7 @@ const auth0 = new AuthenticationClient({
 });
 
 var mosca = require('mosca');
+var client = require('mqtt');
 var settings = {
 		port:1883
 		}
@@ -29,6 +30,18 @@ server.on('clientConnected', function(client) {
     console.log('client connected', client.id);
 });
 
+var client = mqtt.connect('mqtt://127.0.0.1:1883');
+client.on('connect', function(){
+    console.log('client connected');
+    client.subscribe('chat');
+    console.log('suscribed to chat')
+});
+
+client.on('message', function(topic, message){
+      console.log('message received');
+});
+
+client.publish('chat', JSON.stringify(m));
 
 
 async function asyncForEach(array, callback) {
