@@ -244,31 +244,6 @@ app.onSync(async (body, headers) => {
 			  devices
 		}
 	};
-	var dbo = await initDBConnection();
-	await dbo.collection("status").findOneAndUpdate(query, newvalues, {upsert:true,strict: false});
-	//client.publish('/device/status/' + deviceId, "status:" + state);
-	commands[0].ids.push(deviceId);
-	commands[0].states = {
-		on: state,
-		online: true
-	};
-				// Report state back to Homegraph
-	app.reportState({
-		agentUserId: "sanjeet.pathak990@gmail.com",
-		requestId: Math.random().toString(),
-		payload: {
-			devices: {
-				states: {
-						[deviceId]: commands[0].states,
-						},
-					},
-			},
-	}).then((res) => {
-			//console.log("Success reporting: " + res);
-	})
-	.catch((res) => {
-			//console.log("Failed reporting: " + res);
-	});
 	//console.log(JSON.stringify(data, null, 4));
 	return data;
 });
@@ -412,7 +387,7 @@ function doExecute(deviceId, execution, dbo){
 
 express().get('/status', function (req, res) {
 	res.send('Hello World');
-})
+ })
  
  
 express().use(bodyParser.json(), app).listen(port);
