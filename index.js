@@ -108,6 +108,11 @@ client.on('message', async function(topic, message){
 							},
 						},
 					},
+				}).then((res) => {
+					console.log("Success reporting: " + res);
+				})
+				.catch((res) => {
+					console.log("Failed reporting: " + res);
 				});
 			}
 	    }catch(e){
