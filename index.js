@@ -14,12 +14,46 @@ const auth0 = new AuthenticationClient({
   'domain': 'marswave.auth0.com'
 });
 
+
+var mosca = require('mosca');
+
+var ascoltatore = {
+  //using ascoltatore
+  type: 'mongo',
+  url: 'mongodb://marswavehome.tk:27017/smarthome',
+  pubsubCollection: 'status',
+  mongo: {}
+};
+
+var settings = {
+  port: 1883,
+  backend: ascoltatore
+};
+
+var server = new mosca.Server(settings);
+
+server.on('clientConnected', function(client) {
+    console.log('client connected', client.id);
+});
+
 async function asyncForEach(array, callback) {
   for (let index = 0; index < array.length; index++) {
     await callback(array[index], index, array);
   }
 }
 
+// fired when a message is received
+server.on('published', function(packet, client) {
+	console.log('Published', packet.payload);
+  });
+  
+  server.on('ready', setup);
+  
+  // fired when the mqtt server is ready
+  function setup() {
+	console.log('Mosca server is up and running');
+  }
+  
 const {smarthome} = require('actions-on-google');
 const app = smarthome({
   jwt: require('./secrets.json')
@@ -280,4 +314,9 @@ function doExecute(userId, deviceId, execution, dbo){
     })
 }
 
+express().get('/status', function (req, res) {
+	res.send('Hello World');
+ })
+ 
+ 
 express().use(bodyParser.json(), app).listen(port);
