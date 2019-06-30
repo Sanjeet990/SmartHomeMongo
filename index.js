@@ -35,7 +35,7 @@ function initDBConnection(){
 var server = new mosca.Server(settings);
 
 server.authenticate = function (client, username, password, callback) {
-	if(username=="sanjeet" && password == "12345"){
+	if(username=="MarswaveHome" && password == "Marswave@2017"){
 		callback(null, true);
 	}else{
 		callback(null, false);
@@ -58,7 +58,7 @@ server.on('published', function(packet, client) {
 
 //create a MQTT client to push status
 var mqtt = require('mqtt')
-var client  = mqtt.connect('mqtt://127.0.0.1:1883')
+var client  = mqtt.connect('mqtt://127.0.0.1:1883', {username: "MarswaveHome", password: "Marswave@2017"})
 
 client.on('connect', function(){
     //console.log('client connected');
