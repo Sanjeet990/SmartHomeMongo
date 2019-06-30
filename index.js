@@ -109,16 +109,16 @@ client.on('message', async function(topic, message){
 						},
 					},
 				}).then((res) => {
-					console.log("Success reporting: " + res);
+					//console.log("Success reporting: " + res);
 				})
 				.catch((res) => {
-					console.log("Failed reporting: " + res);
+					//console.log("Failed reporting: " + res);
 				});
 			}
 	    }catch(e){
-			console.log('Error : ' + e);
+			//console.log('Error : ' + e);
 		}
-        console.log('message received : ' + message);
+        //console.log('message received : ' + message);
 });
 
 async function asyncForEach(array, callback) {
