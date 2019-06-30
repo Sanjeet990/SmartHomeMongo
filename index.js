@@ -59,18 +59,22 @@ client.on('connect', function(){
 
 client.on('message', async function(topic, message){
 	  //Recieved a message
-	  var deviceId = topic.replace('/device/status/', '');
-	  var parts = message.toString().split(":");
-	  var query = { _id: deviceId };
-	  if(parts[0] == "status"){
-		  if(parts[1] == "true") var state = true;
-		  else var state = false;
-		  var dbo = await initDBConnection(); 
-		  var newvalues = { $set: {lastonline: new Date().getTime(), running: state } };
-		  dbo.collection("status").findOneAndUpdate(query, newvalues, {upsert:true,strict: false});
-		  client.publish('/device/status/' + deviceId, "status:" + execution.params.on);
-	  }
-      console.log('message received : ' + message);
+	  try{
+			var deviceId = topic.replace('/device/status/', '');
+			var parts = message.toString().split(":");
+			var query = { _id: deviceId };
+			if(parts[0] == "status"){
+				if(parts[1] == "true") var state = true;
+				else var state = false;
+				var dbo = await initDBConnection(); 
+				var newvalues = { $set: {lastonline: new Date().getTime(), running: state } };
+				dbo.collection("status").findOneAndUpdate(query, newvalues, {upsert:true,strict: false});
+				client.publish('/device/status/' + deviceId, "status:" + execution.params.on);
+			}
+	    }catch(e){
+			console.log('Error : ' + e);
+		}
+        console.log('message received : ' + message);
 });
 
 async function asyncForEach(array, callback) {
