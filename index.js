@@ -32,6 +32,10 @@ server.on('published', function(packet, client) {
 	console.log('message from server: ', packet.payload + ' - ' + client);
 });
 
+server.on('subscribed', (topic, client) => {
+	server.publish(message, client)
+})
+
 //create a MQTT client to push status
 var mqtt = require('mqtt')
 var client  = mqtt.connect('mqtt://127.0.0.1:1883')
@@ -44,8 +48,6 @@ client.on('connect', function(){
 client.on('message', function(topic, message){
       console.log('message received : ' + message);
 });
-
-client.publish('chat', JSON.stringify("xlol"));
 
 async function asyncForEach(array, callback) {
   for (let index = 0; index < array.length; index++) {
@@ -302,6 +304,7 @@ function doExecute(userId, deviceId, execution, dbo){
 					case 'action.devices.commands.OnOff':
 						var newvalues = { $set: {lastonline: new Date().getTime(), running: execution.params.on } };
 						dbo.collection("status").findOneAndUpdate(query, newvalues, {upsert:true,strict: false});
+						client.publish('device/status/' + deviceId, execution.params.on);
 						resolve(dbo.collection("status").find(query).toArray());
 						break;
 					// action.devices.traits.OpenClose
