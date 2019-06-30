@@ -135,8 +135,11 @@ client.on('message', async function(topic, message){
 								return el != null;
 							});
 							await filtered.forEach(subDevice => {
+								var query2 = { _id: subDevice.id };
+								await dbo.collection("status").find(query2).toArray( async function(err, result) {
+									client.publish(topic, result[0].running);
+								});
 							});
-							client.publish(topic, JSON.stringify(filtered, null, 4));
 						}
 					});
 			})
