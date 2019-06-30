@@ -6,8 +6,6 @@ var MongoClient = require('mongodb').MongoClient;
 
 var url = "mongodb://marswavehome.tk:27017/smarthome";
 
-let serviceAccount = require('./secrets.json');
-
 const {AuthenticationClient} = require('auth0');
 const auth0 = new AuthenticationClient({
   'clientId': 'v12WpZgnb7rdCH8opzT0I03Zirux4Lm2',
@@ -16,33 +14,37 @@ const auth0 = new AuthenticationClient({
 
 var mosca = require('mosca');
 var settings = {
-		port:1883
-		}
+	port:1883
+}
 
 var server = new mosca.Server(settings);
 
-server.on('ready', function(){
+await server.on('ready', function(){
 	console.log("ready");
 });
 
-server.on('clientConnected', function(client) {
-    console.log('client connected', client.id);
+await server.on('clientConnected', function(client) {
+	console.log('client connected', client.id);
+	clientID = client.id;
 });
 
+await server.on('published', function(packet, client) {
+	console.log('message from server == Published : ', packet.payload);
+});
+
+//create a MQTT client to push status
 var mqtt = require('mqtt')
-var client  = mqtt.connect('mqtt://marswavehome.tk:1883')
+var client  = mqtt.connect('mqtt://127.0.0.1:1883')
 client.on('connect', function(){
     console.log('client connected');
-    client.subscribe('chat');
-    console.log('suscribed to chat')
+    client.subscribe('device/status/#');
 });
 
 client.on('message', function(topic, message){
-      console.log('message received');
+      console.log('message received ' + message);
 });
 
 client.publish('chat', JSON.stringify("xlol"));
-
 
 async function asyncForEach(array, callback) {
   for (let index = 0; index < array.length; index++) {
