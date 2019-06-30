@@ -94,7 +94,7 @@ client.on('message', async function(topic, message){
 				var status = await doExecute(deviceId, state, dbo);
 				commands[0].ids.push(deviceId);
 				commands[0].states = {
-					on: state[0].running,
+					on: status[0].running,
 					online: true
 				};
 				// Report state back to Homegraph
