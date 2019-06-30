@@ -43,6 +43,17 @@ client.on('connect', function(){
 });
 
 client.on('message', function(topic, message){
+	  //Recieved a message
+	  var deviceId = topic.replace('/device/status/', '');
+	  var parts = message.split(":");
+	  var query = { _id: deviceId };
+	  if(parts[0] == "status"){
+		  if(parts[1] == "true") var state = true;
+		  else var state = false;
+		  var newvalues = { $set: {lastonline: new Date().getTime(), running: state } };
+		  dbo.collection("status").findOneAndUpdate(query, newvalues, {upsert:true,strict: false});
+		  client.publish('/device/status/' + deviceId, "" + execution.params.on);
+	  }
       console.log('message received : ' + message);
 });
 
@@ -301,7 +312,7 @@ function doExecute(userId, deviceId, execution, dbo){
 					case 'action.devices.commands.OnOff':
 						var newvalues = { $set: {lastonline: new Date().getTime(), running: execution.params.on } };
 						dbo.collection("status").findOneAndUpdate(query, newvalues, {upsert:true,strict: false});
-						client.publish('/device/status/' + deviceId, "status: " + execution.params.on);
+						client.publish('/device/status/' + deviceId, "" + execution.params.on);
 						resolve(dbo.collection("status").find(query).toArray());
 						break;
 					// action.devices.traits.OpenClose
