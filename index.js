@@ -25,6 +25,11 @@ server.on('ready', function(){
 	console.log("ready");
 });
 
+server.on('clientConnected', function(client) {
+    console.log('client connected', client.id);
+});
+
+
 
 async function asyncForEach(array, callback) {
   for (let index = 0; index < array.length; index++) {
