@@ -32,10 +32,6 @@ server.on('published', function(packet, client) {
 	console.log('message from server: ', packet.payload + ' - ' + client);
 });
 
-server.on('subscribed', (topic, client) => {
-	server.publish(message, client)
-})
-
 //create a MQTT client to push status
 var mqtt = require('mqtt')
 var client  = mqtt.connect('mqtt://127.0.0.1:1883')
