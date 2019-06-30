@@ -126,8 +126,8 @@ client.on('message', async function(topic, message){
 			else if(parts[0] == "fetch"){
 				var device = parts[1];
 				var query = { _id: device };
-				await dbo.collection("devices").find(query).toArray(function(err, result) {
-					result.forEach(subDevice => {
+				await dbo.collection("devices").find(query).toArray( async function(err, result) {
+					result.forEach(async (subDevice) => {
 						if (err){
 							reject(err);
 						}else{
