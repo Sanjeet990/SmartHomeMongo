@@ -72,6 +72,28 @@ const getEmail = async (headers) => {
 
 var port = process.env.PORT || 3000;
 
+const reportState = () => {
+	app.reportState({
+	  requestId: '123ABC',
+	  agentUserId: 'user-123',
+	  payload: {
+		devices: {
+		  states: {
+			"lol1": {
+				on: true,
+				online: true
+			}
+		  }
+	   }
+	  }
+	}).then((res) => {
+		console.log("Success reporting: " + res);
+	})
+	.catch((res) => {
+		console.log("Failed reporting: " + res);
+	})
+  };
+
 client.on('message', async function(topic, message){
 	  //Recieved a message
 	  const commands = [{
@@ -91,29 +113,8 @@ client.on('message', async function(topic, message){
 				var newvalues = { $set: {lastonline: new Date().getTime(), running: state } };
 				dbo.collection("status").findOneAndUpdate(query, newvalues, {upsert:true,strict: false});
 				//client.publish('/device/status/' + deviceId, "status:" + state);
-				var status = await doExecute(deviceId, state, dbo);
-				commands[0].ids.push(deviceId);
-				commands[0].states = {
-					on: status[0].running,
-					online: true
-				};
 				// Report state back to Homegraph
-				app.reportState({
-					agentUserId: "sanjeet.pathak990@gmail.com",
-					requestId: Math.random().toString(),
-					payload: {
-						devices: {
-							states: {
-								[device.id]: commands[0].states,
-							},
-						},
-					},
-				}).then((res) => {
-					console.log("Success reporting: " + res);
-				})
-				.catch((res) => {
-					console.log("Failed reporting: " + res);
-				});
+				await reportState();
 			}
 	    }catch(e){
 			console.log('Error : ' + e);
