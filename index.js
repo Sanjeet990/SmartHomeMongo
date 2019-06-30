@@ -93,10 +93,10 @@ client.on('message', async function(topic, message){
 			var parts = message.toString().split(":");
 			var query = { _id: deviceId };
 			//console.log("Device"+ deviceId + " - ");
+			var dbo = await initDBConnection(); 
 			if(parts[0] == "status"){
 				if(parts[1] == "true") var state = true;
 				else var state = false;
-				var dbo = await initDBConnection(); 
 				var newvalues = { $set: {lastonline: new Date().getTime(), running: state } };
 				dbo.collection("status").findOneAndUpdate(query, newvalues, {upsert:true,strict: false});
 				//client.publish('/device/status/' + deviceId, "status:" + state);
@@ -122,6 +122,24 @@ client.on('message', async function(topic, message){
 				.catch((res) => {
 					//console.log("Failed reporting: " + res);
 				});
+			}
+			else if(parts[0] == "fetch"){
+				var device = parts[1];
+				var query = { _id: device };
+				await dbo.collection("devices").find(query).toArray(function(err, result) {
+					result.forEach(subDevice => {
+						if (err){
+							reject(err);
+						}else{
+							var filtered = result[0].subDevices.filter(function (el) {
+								return el != null;
+							});
+							await filtered.forEach(subDevice => {
+							});
+							client.publish(topic, "Hurrrrrrrrrrrrr");
+						}
+					});
+			})
 			}
 	    }catch(e){
 			//console.log('Error : ' + e);
