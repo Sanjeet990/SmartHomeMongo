@@ -100,7 +100,7 @@ client.on('message', async function(topic, message){
 				// Report state back to Homegraph
 				app.reportState({
 					agentUserId: "sanjeet.pathak990@gmail.com",
-					requestId: "sjhhd7834gh4764jhd78h4h784jjhd784",
+					requestId: Math.random().toString(),
 					payload: {
 						devices: {
 							states: {
