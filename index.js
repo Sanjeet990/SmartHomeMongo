@@ -15,7 +15,7 @@ const auth0 = new AuthenticationClient({
   'domain': 'marswave.auth0.com'
 });
 
-client=mqtt.createClient(1883)
+client=mqtt.createClient(1883, "marswavehome.tk")
 client.subscribe("status/+")
 client.on('message', insertEvent);
 
