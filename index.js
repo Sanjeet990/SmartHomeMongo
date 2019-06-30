@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 var Promise = require('promise');
 
+
 var MongoClient = require('mongodb').MongoClient;
 
 var url = "mongodb://marswavehome.tk:27017/smarthome";
@@ -15,6 +16,20 @@ const auth0 = new AuthenticationClient({
 var mosca = require('mosca');
 var settings = {
 	port:1883
+}
+
+function initDBConnection(){
+	return new Promise(function(resolve, reject) {
+		// Connect to database
+		MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
+			if (err) {
+                reject(err);
+            } else {
+				var dbo = db.db("smarthome");
+                resolve(dbo);
+            }
+		})
+    })
 }
 
 var server = new mosca.Server(settings);
@@ -42,7 +57,7 @@ client.on('connect', function(){
     console.log('suscribed to chat')
 });
 
-client.on('message', function(topic, message){
+client.on('message', async function(topic, message){
 	  //Recieved a message
 	  var deviceId = topic.replace('/device/status/', '');
 	  var parts = message.toString().split(":");
@@ -50,6 +65,7 @@ client.on('message', function(topic, message){
 	  if(parts[0] == "status"){
 		  if(parts[1] == "true") var state = true;
 		  else var state = false;
+		  var dbo = await initDBConnection(); 
 		  var newvalues = { $set: {lastonline: new Date().getTime(), running: state } };
 		  dbo.collection("status").findOneAndUpdate(query, newvalues, {upsert:true,strict: false});
 		  client.publish('/device/status/' + deviceId, "status:" + execution.params.on);
@@ -75,20 +91,6 @@ const getEmail = async (headers) => {
 }
 
 var port = process.env.PORT || 3000;
-
-function initDBConnection(){
-	return new Promise(function(resolve, reject) {
-		// Connect to database
-		MongoClient.connect(url, { useNewUrlParser: true }, function(err, db) {
-			if (err) {
-                reject(err);
-            } else {
-				var dbo = db.db("smarthome");
-                resolve(dbo);
-            }
-		})
-    })
-}
 
 function findDevices(userEmail, dbo){
 	return new Promise(function(resolve, reject) {
