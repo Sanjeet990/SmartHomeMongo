@@ -51,37 +51,13 @@ server.on('published', function(packet, client) {
 //create a MQTT client to push status
 var mqtt = require('mqtt')
 var client  = mqtt.connect('mqtt://127.0.0.1:1883')
+
 client.on('connect', function(){
     console.log('client connected');
     client.subscribe('/device/status/+');
     console.log('suscribed to chat')
 });
 
-client.on('message', async function(topic, message){
-	  //Recieved a message
-	  try{
-			var deviceId = topic.replace('/device/status/', '');
-			var parts = message.toString().split(":");
-			var query = { _id: deviceId };
-			if(parts[0] == "status"){
-				if(parts[1] == "true") var state = true;
-				else var state = false;
-				var dbo = await initDBConnection(); 
-				var newvalues = { $set: {lastonline: new Date().getTime(), running: state } };
-				dbo.collection("status").findOneAndUpdate(query, newvalues, {upsert:true,strict: false});
-				//client.publish('/device/status/' + deviceId, "status:" + state);
-			}
-	    }catch(e){
-			console.log('Error : ' + e);
-		}
-        console.log('message received : ' + message);
-});
-
-async function asyncForEach(array, callback) {
-  for (let index = 0; index < array.length; index++) {
-    await callback(array[index], index, array);
-  }
-}
 
 const {smarthome} = require('actions-on-google');
 const app = smarthome({
@@ -95,6 +71,56 @@ const getEmail = async (headers) => {
 }
 
 var port = process.env.PORT || 3000;
+
+client.on('message', async function(topic, message){
+	  //Recieved a message
+	  const commands = [{
+		ids: [],
+		status: 'SUCCESS',
+		states: {},
+	  }];
+
+	  try{
+			var deviceId = topic.replace('/device/status/', '');
+			var parts = message.toString().split(":");
+			var query = { _id: deviceId };
+			if(parts[0] == "status"){
+				if(parts[1] == "true") var state = true;
+				else var state = false;
+				var dbo = await initDBConnection(); 
+				var newvalues = { $set: {lastonline: new Date().getTime(), running: state } };
+				dbo.collection("status").findOneAndUpdate(query, newvalues, {upsert:true,strict: false});
+				//client.publish('/device/status/' + deviceId, "status:" + state);
+				var status = await doExecute(deviceId, state, dbo);
+				commands[0].ids.push(deviceId);
+				commands[0].states = {
+					on: state[0].running,
+					online: true
+				};
+				// Report state back to Homegraph
+				app.reportState({
+					agentUserId: "sanjeet.pathak990@gmail.com",
+					requestId: "sjhhd7834gh4764jhd78h4h784jjhd784",
+					payload: {
+						devices: {
+							states: {
+								[device.id]: commands[0].states,
+							},
+						},
+					},
+				});
+			}
+	    }catch(e){
+			console.log('Error : ' + e);
+		}
+        console.log('message received : ' + message);
+});
+
+async function asyncForEach(array, callback) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
+}
 
 function findDevices(userEmail, dbo){
 	return new Promise(function(resolve, reject) {
@@ -270,7 +296,7 @@ app.onExecute(async (body, headers) => {
 
 	await asyncForEach(fineDevices, async (device) => {
 		try{
-			var state = await doExecute(userId, device.id, execution[0], dbo);
+			var state = await doExecute(device.id, execution[0], dbo);
 			commands[0].ids.push(device.id);
 			commands[0].states = {
 				on: state[0].running,
@@ -305,7 +331,7 @@ app.onExecute(async (body, headers) => {
 	return data;
 });
 
-function doExecute(userId, deviceId, execution, dbo){
+function doExecute(deviceId, execution, dbo){
 	return new Promise(function(resolve, reject) {
 		// Query database
 		var query = { _id: deviceId };
