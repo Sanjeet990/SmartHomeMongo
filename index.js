@@ -30,7 +30,7 @@ server.on('clientConnected', function(client) {
 });
 
 var mqtt = require('mqtt')
-var client  = mqtt.connect('mqtt://test.mosquitto.org')
+var client  = mqtt.connect('mqtt://127.0.0.1:1883')
 client.on('connect', function(){
     console.log('client connected');
     client.subscribe('chat');
