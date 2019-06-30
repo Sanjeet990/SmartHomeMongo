@@ -29,8 +29,8 @@ server.on('clientConnected', function(client) {
 });
 
 server.on('published', function(packet, client) {
-	console.log(JSON.stringify(client, null, 4));
-	console.log('message from server: ', packet.payload + ' - ' + client);
+	//console.log(JSON.stringify(client, null, 4));
+	//console.log('message from server: ', packet.payload + ' - ' + client);
 });
 
 //create a MQTT client to push status
@@ -38,7 +38,7 @@ var mqtt = require('mqtt')
 var client  = mqtt.connect('mqtt://127.0.0.1:1883')
 client.on('connect', function(){
     console.log('client connected');
-    client.subscribe('chat');
+    client.subscribe('/device/status/+');
     console.log('suscribed to chat')
 });
 
