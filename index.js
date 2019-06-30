@@ -84,6 +84,7 @@ client.on('message', async function(topic, message){
 			var deviceId = topic.replace('/device/status/', '');
 			var parts = message.toString().split(":");
 			var query = { _id: deviceId };
+			console.log("Device"+ deviceId + " - ");
 			if(parts[0] == "status"){
 				if(parts[1] == "true") var state = true;
 				else var state = false;
@@ -111,7 +112,7 @@ client.on('message', async function(topic, message){
 					console.log("Success reporting: " + res);
 				})
 				.catch((res) => {
-					console.log("Success reporting: " + res);
+					console.log("Failed reporting: " + res);
 				});
 			}
 	    }catch(e){
