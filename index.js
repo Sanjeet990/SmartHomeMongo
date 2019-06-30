@@ -29,7 +29,7 @@ server.on('clientConnected', function(client) {
 });
 
 server.on('published', function(packet, client) {
-	console.log('message from server: ', packet.payload + ' - ' + client.id);
+	console.log('message from server: ', packet.payload + ' - ' + client);
 });
 
 //create a MQTT client to push status
