@@ -42,7 +42,7 @@ client.on('connect', function(){
 });
 
 client.on('message', function(topic, message){
-      console.log('message received');
+      console.log('message received : ' + message);
 });
 
 client.publish('chat', JSON.stringify("xlol"));
