@@ -41,7 +41,7 @@ client.on('message', function(topic, message){
       console.log('message received');
 });
 
-client.publish('chat', JSON.stringify(m));
+client.publish('chat', JSON.stringify("xlol"));
 
 
 async function asyncForEach(array, callback) {
