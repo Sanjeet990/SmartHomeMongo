@@ -28,9 +28,9 @@ server.on('clientConnected', function(client) {
 	clientID = client.id;
 });
 
-server.on('published', function(packet, client) {
-	console.log('message from server == Published : ', packet.payload);
-});
+//server.on('published', function(packet, client) {
+//	console.log('message from server == Published : ', packet.payload);
+//});
 
 //create a MQTT client to push status
 var mqtt = require('mqtt')
@@ -41,7 +41,7 @@ client.on('connect', function(){
 });
 
 client.on('message', function(topic, message){
-      console.log('message received ' + message);
+      console.log('message received : ' + message);
 });
 
 client.publish('chat', JSON.stringify("xlol"));
