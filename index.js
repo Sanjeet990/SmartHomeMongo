@@ -34,6 +34,14 @@ function initDBConnection(){
 
 var server = new mosca.Server(settings);
 
+server.authenticate = function (client, username, password, callback) {
+	if(username=="sanjeet" && password == "12345"){
+		callback(null, true);
+	}else{
+		callback(null, false);
+	}
+ }
+
 server.on('ready', function(){
 	//console.log("ready");
 });
