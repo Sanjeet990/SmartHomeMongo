@@ -1,7 +1,6 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 var Promise = require('promise');
-var mqtt=require('mqtt')
 
 var MongoClient = require('mongodb').MongoClient;
 
@@ -15,13 +14,17 @@ const auth0 = new AuthenticationClient({
   'domain': 'marswave.auth0.com'
 });
 
-client=mqtt.createClient(1883, "marswavehome.tk")
-client.subscribe("status/+")
-client.on('message', insertEvent);
+var mosca = require('mosca');
+var settings = {
+		port:1883
+		}
 
-function insertEvent(topic,payload) {  
-	console.log("MQTT worked");
-};
+var server = new mosca.Server(settings);
+
+server.on('ready', function(){
+	console.log("ready");
+});
+
 
 async function asyncForEach(array, callback) {
   for (let index = 0; index < array.length; index++) {
