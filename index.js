@@ -69,7 +69,7 @@ client.on('message', async function(topic, message){
 				var dbo = await initDBConnection(); 
 				var newvalues = { $set: {lastonline: new Date().getTime(), running: state } };
 				dbo.collection("status").findOneAndUpdate(query, newvalues, {upsert:true,strict: false});
-				client.publish('/device/status/' + deviceId, "status:" + state);
+				//client.publish('/device/status/' + deviceId, "status:" + state);
 			}
 	    }catch(e){
 			console.log('Error : ' + e);
