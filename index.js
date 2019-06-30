@@ -134,7 +134,7 @@ client.on('message', async function(topic, message){
 							var filtered = result[0].subDevices.filter(function (el) {
 								return el != null;
 							});
-							await filtered.forEach(subDevice => {
+							filtered.forEach(async(subDevice) => {
 								var query2 = { _id: subDevice.id };
 								await dbo.collection("status").find(query2).toArray( async function(err, result) {
 									client.publish(topic, result[0].running);
