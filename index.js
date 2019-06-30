@@ -29,7 +29,7 @@ server.on('clientConnected', function(client) {
 });
 
 server.on('published', function(packet, client) {
-	console.log('Recieved at server :  ', packet.payload);
+	console.log('message from server == Published : ', packet.payload);
 });
 
 //create a MQTT client to push status
@@ -37,14 +37,15 @@ var mqtt = require('mqtt')
 var client  = mqtt.connect('mqtt://127.0.0.1:1883')
 client.on('connect', function(){
     console.log('client connected');
-    client.subscribe('device/status/#');
+    client.subscribe('chat');
+    console.log('suscribed to chat')
 });
 
 client.on('message', function(topic, message){
-      console.log('message received : ' + message);
+      console.log('message received');
 });
 
-client.publish('device/status/1', JSON.stringify("xlol"));
+client.publish('chat', JSON.stringify("xlol"));
 
 async function asyncForEach(array, callback) {
   for (let index = 0; index < array.length; index++) {
