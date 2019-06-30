@@ -136,7 +136,7 @@ client.on('message', async function(topic, message){
 							});
 							await filtered.forEach(subDevice => {
 							});
-							client.publish(topic, "Hurrrrrrrrrrrrr");
+							client.publish(topic, console.log(JSON.stringify(filtered, null, 4)));
 						}
 					});
 			})
