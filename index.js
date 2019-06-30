@@ -52,7 +52,7 @@ client.on('message', function(topic, message){
 		  else var state = false;
 		  var newvalues = { $set: {lastonline: new Date().getTime(), running: state } };
 		  dbo.collection("status").findOneAndUpdate(query, newvalues, {upsert:true,strict: false});
-		  client.publish('/device/status/' + deviceId, "" + execution.params.on);
+		  client.publish('/device/status/' + deviceId, "status:" + execution.params.on);
 	  }
       console.log('message received : ' + message);
 });
@@ -312,7 +312,7 @@ function doExecute(userId, deviceId, execution, dbo){
 					case 'action.devices.commands.OnOff':
 						var newvalues = { $set: {lastonline: new Date().getTime(), running: execution.params.on } };
 						dbo.collection("status").findOneAndUpdate(query, newvalues, {upsert:true,strict: false});
-						client.publish('/device/status/' + deviceId, "" + execution.params.on);
+						client.publish('/device/status/' + deviceId, "status:" + execution.params.on);
 						resolve(dbo.collection("status").find(query).toArray());
 						break;
 					// action.devices.traits.OpenClose
