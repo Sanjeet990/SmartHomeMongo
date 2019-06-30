@@ -103,7 +103,7 @@ client.on('message', async function(topic, message){
 					payload: {
 						devices: {
 							states: {
-								[device.id]: commands[0].states,
+								[deviceId]: commands[0].states,
 							},
 						},
 					},
