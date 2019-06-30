@@ -19,16 +19,16 @@ var settings = {
 
 var server = new mosca.Server(settings);
 
-await server.on('ready', function(){
+server.on('ready', function(){
 	console.log("ready");
 });
 
-await server.on('clientConnected', function(client) {
+server.on('clientConnected', function(client) {
 	console.log('client connected', client.id);
 	clientID = client.id;
 });
 
-await server.on('published', function(packet, client) {
+server.on('published', function(packet, client) {
 	console.log('message from server == Published : ', packet.payload);
 });
 
