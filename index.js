@@ -44,9 +44,9 @@ client.on('connect', function(){
 
 client.on('message', function(topic, message){
 	  //Recieved a message
-	  /*var deviceId = topic.replace('/device/status/', '');
-	  var parts = message.split(":");
-	  var query = { _id: deviceId };
+	  var deviceId = topic.replace('/device/status/', '');
+	  var parts = ""+message.split(":");
+	  /*var query = { _id: deviceId };
 	  if(parts[0] == "status"){
 		  if(parts[1] == "true") var state = true;
 		  else var state = false;
