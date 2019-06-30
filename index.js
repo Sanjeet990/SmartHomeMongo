@@ -46,7 +46,7 @@ client.on('message', function(topic, message){
 	  //Recieved a message
 	  var deviceId = topic.replace('/device/status/', '');
 	  var parts = message.toString().split(":");
-	  /*var query = { _id: deviceId };
+	  var query = { _id: deviceId };
 	  if(parts[0] == "status"){
 		  if(parts[1] == "true") var state = true;
 		  else var state = false;
@@ -54,7 +54,6 @@ client.on('message', function(topic, message){
 		  dbo.collection("status").findOneAndUpdate(query, newvalues, {upsert:true,strict: false});
 		  client.publish('/device/status/' + deviceId, "status:" + execution.params.on);
 	  }
-	  */
       console.log('message received : ' + message);
 });
 
