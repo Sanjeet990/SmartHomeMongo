@@ -229,6 +229,7 @@ function prepareDeviceData(userEmail){
 			})
 		}, function(error){
 			reject("Can not connect to database.");
+			var dbo = await initDBConnection();
 		})	
 	})
 }
@@ -244,6 +245,7 @@ app.onSync(async (body, headers) => {
 			  devices
 		}
 	};
+	var dbo = await initDBConnection();
 	await dbo.collection("status").findOneAndUpdate(query, newvalues, {upsert:true,strict: false});
 	//client.publish('/device/status/' + deviceId, "status:" + state);
 	commands[0].ids.push(deviceId);
