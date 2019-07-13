@@ -128,17 +128,23 @@ client.on('message', async function(topic, message){
 				var query = { _id: device };
 				var data = [];
 				console.log("fetch event");
-				await listSubDevices(device, dbo).then(function(subDevice){
-					subDevice.forEach(dataX => {	
-						dbo.collection("status").find({ _id: dataX.id }).toArray(function(err, result) {
-							if (err){
-								reject(err);
-							}else{
-								data.push(result);
-							}
-						});
+				dbo.collection("devices").find({ _id: device }).toArray(function(err, result) {
+					result.forEach(subDevice => {
+						if (err){
+							reject(err);
+						}else{
+							subDevice.forEach(dataX => {	
+								dbo.collection("status").find({ _id: dataX.id }).toArray(function(err, result) {
+									if (err){
+										reject(err);
+									}else{
+										data.push(result);
+									}
+								});
+							});
+						}
 					});
-				});
+				})
 				console.log(JSON.stringify(data, null, 4));
 			}
 	    }catch(e){
@@ -188,20 +194,20 @@ function findSubDevices(devices, dbo){
 }
 
 function listSubDevices(device, dbo){
-	let promises = [];
-
-	var query = { _id: device };
-	dbo.collection("devices").find(query).toArray(function(err, result) {
-		promises.push(new Promise(async function(resolve, reject) {
-			if(err){
-				reject(err);
-			}else{
-				resolve(result);
-			}
-		}));
-	})
 	
-	return Promise.all(promises);
+	return new Promise(function(resolve, reject) {
+		// Query database by iterating over
+		var query = { _id: device };
+		dbo.collection("devices").find(query).toArray(function(err, result) {
+			result.forEach(subDevice => {
+				if (err){
+					reject(err);
+				}else{
+					resolve(subDevice);
+				}
+			});
+		})
+    })
 }
 
 function prepareDeviceData(userEmail){
