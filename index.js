@@ -134,7 +134,7 @@ client.on('message', async function(topic, message){
 					}else{
 						await result[0].subDevices.forEach(dataX => {	
 							dbo.collection("status").find({ _id: dataX.id }).toArray(function(err, resultx) {
-								console.log(JSON.stringify(resultx, null, 4));
+								console.log(JSON.stringify(dataX, null, 4));
 								if (err){
 									reject(err);
 								}else{
