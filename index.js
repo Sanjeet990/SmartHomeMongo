@@ -127,6 +127,7 @@ client.on('message', async function(topic, message){
 				var device = parts[1];
 				var query = { _id: device };
 				var data = [];
+				console.log("fetch event");
 				await findSubDevices(device, dbo).then(function(subDevice){
 					subDevice.forEach(dataX => {	
 						dbo.collection("status").find({ _id: dataX.id }).toArray(function(err, result) {
@@ -141,7 +142,7 @@ client.on('message', async function(topic, message){
 				console.log(JSON.stringify(data, null, 4));
 			}
 	    }catch(e){
-			//console.log('Error : ' + e);
+			console.log('Error : ' + e);
 		}
         //console.log('message received : ' + message);
 });
