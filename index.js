@@ -129,22 +129,20 @@ client.on('message', async function(topic, message){
 				var data = [];
 				console.log("fetch event");
 				dbo.collection("devices").find({ _id: device }).toArray(function(err, result) {
-					console.log(JSON.stringify(result, null, 4));
-					result.forEach(devices => {
-						if (err){
-							reject(err);
-						}else{
-							devices.subDevices.forEach(dataX => {	
-								dbo.collection("status").find({ _id: dataX.id }).toArray(function(err, result) {
-									if (err){
-										reject(err);
-									}else{
-										data.push(result);
-									}
-								});
+					if (err){
+						reject(err);
+					}else{
+						result.subDevices.forEach(dataX => {	
+							dbo.collection("status").find({ _id: dataX.id }).toArray(function(err, resultx) {
+								console.log(JSON.stringify(resultx, null, 4));
+								if (err){
+									reject(err);
+								}else{
+									data.push(resultx);
+								}
 							});
-						}
-					});
+						});
+					}
 				})
 				console.log(JSON.stringify(data, null, 4));
 			}
