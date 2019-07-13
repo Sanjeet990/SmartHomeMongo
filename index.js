@@ -137,8 +137,9 @@ client.on('message', async function(topic, message){
 							dataArray.forEach(singleObj => {
 								data.push({"id" : singleObj._id, "status" : singleObj.running});
 							});
-							console.log(JSON.stringify(data, null, 4));
 						});	
+						client.publish('/device/status/' + device, "report:" + JSON.stringify(data, null, 4));
+						//console.log(JSON.stringify(data, null, 4));
 					}
 				})
 			}
