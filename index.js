@@ -139,10 +139,10 @@ client.on('message', async function(topic, message){
 									reject(err);
 								}else{
 									data.push(resultx);
+						console.log(JSON.stringify(data, null, 4));
 								}
 							});
 						});	
-						console.log(JSON.stringify(data, null, 4));
 					}
 				})
 			}
