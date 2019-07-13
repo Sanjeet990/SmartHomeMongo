@@ -128,18 +128,18 @@ client.on('message', async function(topic, message){
 				var query = { _id: device };
 				var data = [];
 				console.log("fetch event");
-				dbo.collection("devices").find({ _id: device }).toArray(function(err, result) {
+				dbo.collection("devices").find({ _id: device }).toArray(async function(err, result) {
 					if (err){
 						reject(err);
 					}else{
-						result[0].subDevices.forEach(async (dataX) => {	
+						await result[0].subDevices.forEach(async (dataX) => {	
 							var dataArray = await dbo.collection("status").find({ _id: dataX.id }).toArray();
 							dataArray.forEach(singleObj => {
 								data.push({"id" : singleObj._id, "status" : singleObj.running});
 							});
 						});	
 						client.publish('/device/status/' + device, "report:" + JSON.stringify(data, null, 4));
-						//console.log(JSON.stringify(data, null, 4));
+						console.log(JSON.stringify(data, null, 4));
 					}
 				})
 			}
