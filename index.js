@@ -142,10 +142,10 @@ client.on('message', async function(topic, message){
 									}
 								});
 							});
+				console.log(JSON.stringify(data, null, 4));
 						}
 					});
 				})
-				console.log(JSON.stringify(data, null, 4));
 			}
 	    }catch(e){
 			console.log('Error : ' + e);
