@@ -135,7 +135,7 @@ client.on('message', async function(topic, message){
 						result[0].subDevices.forEach(async (dataX) => {	
 							var dataArray = await dbo.collection("status").find({ _id: dataX.id }).toArray();
 							dataArray.forEach(singleObj => {
-								data.push(singleObj);
+								data.push({"id" : singleObj._id, "status" : singleObj.running});
 							});
 							console.log(JSON.stringify(data, null, 4));
 						});	
