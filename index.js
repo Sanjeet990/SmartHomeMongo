@@ -128,7 +128,7 @@ client.on('message', async function(topic, message){
 				var query = { _id: device };
 				var data = [];
 				console.log("fetch event");
-				dbo.collection("devices").find({ _id: device }).toArray(function(err, result) {
+				dbo.collection("devices").find({ _id: device }).toArray(async function(err, result) {
 					if (err){
 						reject(err);
 					}else{
