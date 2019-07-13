@@ -204,35 +204,15 @@ function listSubDevices(device, dbo){
 
 function prepareDeviceData(userEmail){
 	return new Promise(function(resolve, reject) {
-		const devices = [];
-		
 		var promiseMongo = initDBConnection();
 
 		promiseMongo.then(function(dbo){
 			//console.log("Connected to mongo database. " + dbo.domain);
 			findDevices(userEmail, dbo).then(function(devicex){
+				const subDevices = [];
 				findSubDevices(devicex, dbo).then(function(subDevice){
-					subDevice.forEach(data => {	
-						const deviceData = {
-							"id": data.id,
-							"type": data.type,
-							"traits": [data.traits],
-							"name": {
-								"defaultNames": [data.defaultNames],
-								"name": data.name,
-								"nicknames": [data.nicknames]
-							},
-							"willReportState": false,
-							"deviceInfo": {
-								"manufacturer": "Marswave SmartHome",
-								"model": data.model,
-								"hwVersion": data.hwVersion,
-								"swVersion": data.swVersion
-							}
-						};
-						devices.push(deviceData);
-					});
-					resolve(devices);
+					//console.log(JSON.stringify(subDevice, null, 4));
+					resolve(subDevice);
 				}, function(error){
 					reject("Error: " + error);
 				})
