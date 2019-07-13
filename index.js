@@ -214,7 +214,7 @@ function prepareDeviceData(userEmail){
 				const subDevices = [];
 				findSubDevices(devicex, dbo).then(function(subDevice){
 					subDevice.forEach(dataX => {	
-						dataX.forEach(data => {	
+						dataX.subDevices.forEach(data => {	
 							console.log(JSON.stringify(data, null, 4));
 							const deviceData = {
 								"id": data.id,
