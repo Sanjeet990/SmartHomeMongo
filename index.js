@@ -188,19 +188,20 @@ function findSubDevices(devices, dbo){
 }
 
 function listSubDevices(device, dbo){
-	return new Promise(function(resolve, reject) {
-		// Query database by iterating over
-		var query = { _id: device };
-		dbo.collection("devices").find(query).toArray(function(err, result) {
-			result.forEach(subDevice => {
-				if (err){
-					reject(err);
-				}else{
-					resolve(subDevice);
-				}
-			});
-		})
-    })
+	let promises = [];
+
+	var query = { _id: device };
+	dbo.collection("devices").find(query).toArray(function(err, result) {
+		promises.push(new Promise(async function(resolve, reject) {
+			if(err){
+				reject(err);
+			}else{
+				resolve(result);
+			}
+		}));
+	})
+	
+	return Promise.all(promises);
 }
 
 function prepareDeviceData(userEmail){
