@@ -132,7 +132,7 @@ client.on('message', async function(topic, message){
 					if (err){
 						reject(err);
 					}else{
-						result[0].subDevices.forEach(dataX => {	
+						await result[0].subDevices.forEach(dataX => {	
 							dbo.collection("status").find({ _id: dataX.id }).toArray(function(err, resultx) {
 								console.log(JSON.stringify(dataX.id, null, 4));
 								if (err){
@@ -141,10 +141,10 @@ client.on('message', async function(topic, message){
 									data.push(resultx);
 								}
 							});
-						});
+						});	
+						console.log(JSON.stringify(data, null, 4));
 					}
 				})
-				console.log(JSON.stringify(data, null, 4));
 			}
 	    }catch(e){
 			console.log('Error : ' + e);
