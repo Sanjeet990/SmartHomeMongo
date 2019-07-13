@@ -128,7 +128,7 @@ client.on('message', async function(topic, message){
 				var query = { _id: device };
 				var data = [];
 				console.log("fetch event");
-				await findSubDevices(device, dbo).then(function(subDevice){
+				await listSubDevices(device, dbo).then(function(subDevice){
 					subDevice.forEach(dataX => {	
 						dbo.collection("status").find({ _id: dataX.id }).toArray(function(err, result) {
 							if (err){
