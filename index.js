@@ -127,7 +127,7 @@ client.on('message', async function(topic, message){
 				var device = parts[1];
 				var query = { _id: device };
 				var data = [];
-				console.log("fetch event");
+				//console.log("fetch event");
 				var deviceData = await dbo.collection("devices").find({ _id: device }).toArray()
 				
 				var promise = new Promise((resolve, reject) => {
