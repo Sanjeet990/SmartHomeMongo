@@ -170,24 +170,35 @@ function findDevices(userEmail, dbo){
 }
 
 function findSubDevices(devices, dbo){
+	// Query database by iterating over
+	let promises = [];
+
+	devices.forEach(device => {
+		promises.push(new Promise(async function(resolve, reject) {
+			var subDevices = listSubDevices(device, dbo);
+			subDevices.then(function(data){
+				resolve(data);
+			}, function(error){
+				reject(error);
+			});
+    	}))
+	});	
+	return Promise.all(promises);
+}
+
+function listSubDevices(device, dbo){
 	return new Promise(function(resolve, reject) {
 		// Query database by iterating over
-		var subDevices = [];
-		devices.forEach(device => {
-			var query = { _id: device };
-			dbo.collection("devices").find(query).toArray(function(err, result) {
-				result.forEach(subDevice => {
-					if (err){
-						reject(err);
-					}else{
-						var filtered = result[0].subDevices.filter(function (el) {
-							return el != null;
-						});
-						resolve(filtered);
-					}
-				});
-			})
-		});
+		var query = { _id: device };
+		dbo.collection("devices").find(query).toArray(function(err, result) {
+			result.forEach(subDevice => {
+				if (err){
+					reject(err);
+				}else{
+					resolve(subDevice);
+				}
+			});
+		})
     })
 }
 
