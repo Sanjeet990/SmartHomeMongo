@@ -129,6 +129,7 @@ client.on('message', async function(topic, message){
 				var data = [];
 				console.log("fetch event");
 				dbo.collection("devices").find({ _id: device }).toArray(function(err, result) {
+					console.log(JSON.stringify(result, null, 4));
 					result.forEach(devices => {
 						if (err){
 							reject(err);
@@ -142,10 +143,10 @@ client.on('message', async function(topic, message){
 									}
 								});
 							});
-				console.log(JSON.stringify(data, null, 4));
 						}
 					});
 				})
+				console.log(JSON.stringify(data, null, 4));
 			}
 	    }catch(e){
 			console.log('Error : ' + e);
