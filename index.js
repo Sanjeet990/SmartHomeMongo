@@ -206,13 +206,34 @@ function prepareDeviceData(userEmail){
 	return new Promise(function(resolve, reject) {
 		var promiseMongo = initDBConnection();
 
+		const devices = [];
+		
 		promiseMongo.then(function(dbo){
 			//console.log("Connected to mongo database. " + dbo.domain);
 			findDevices(userEmail, dbo).then(function(devicex){
 				const subDevices = [];
 				findSubDevices(devicex, dbo).then(function(subDevice){
-					//console.log(JSON.stringify(subDevice, null, 4));
-					resolve(subDevice);
+					subDevice.forEach(data => {	
+						const deviceData = {
+							"id": data.id,
+							"type": data.type,
+							"traits": [data.traits],
+							"name": {
+								"defaultNames": [data.defaultNames],
+								"name": data.name,
+								"nicknames": [data.nicknames]
+							},
+							"willReportState": false,
+							"deviceInfo": {
+								"manufacturer": "Marswave SmartHome",
+								"model": data.model,
+								"hwVersion": data.hwVersion,
+								"swVersion": data.swVersion
+							}
+						};
+						devices.push(deviceData);
+					});
+					resolve(devices);
 				}, function(error){
 					reject("Error: " + error);
 				})
