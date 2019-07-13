@@ -129,11 +129,11 @@ client.on('message', async function(topic, message){
 				var data = [];
 				console.log("fetch event");
 				dbo.collection("devices").find({ _id: device }).toArray(function(err, result) {
-					result.forEach(subDevice => {
+					result.forEach(devices => {
 						if (err){
 							reject(err);
 						}else{
-							subDevice.forEach(dataX => {	
+							devices.subDevices.forEach(dataX => {	
 								dbo.collection("status").find({ _id: dataX.id }).toArray(function(err, result) {
 									if (err){
 										reject(err);
