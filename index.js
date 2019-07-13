@@ -124,21 +124,21 @@ client.on('message', async function(topic, message){
 				});
 			}
 			else if(parts[0] == "fetch"){
-				/*var device = parts[1];
+				var device = parts[1];
 				var query = { _id: device };
-				await dbo.collection("devices").find(query).toArray( async function(err, result) {
-					result.forEach(async (subDevice) => {
-						if (err){
-							reject(err);
-						}else{
-							var filtered = result[0].subDevices.filter(function (el) {
-								return el != null;
-							});
-							
-						}
+				var data = [];
+				await findSubDevices(device, dbo).then(function(subDevice){
+					subDevice.forEach(dataX => {	
+						dbo.collection("status").find({ _id: dataX.id }).toArray(function(err, result) {
+							if (err){
+								reject(err);
+							}else{
+								data.push(result);
+							}
+						});
 					});
-			})
-			*/
+				});
+				console.log(JSON.stringify(data, null, 4));
 			}
 	    }catch(e){
 			//console.log('Error : ' + e);
@@ -260,7 +260,7 @@ app.onSync(async (body, headers) => {
 			  devices
 		}
 	};
-	console.log(JSON.stringify(data, null, 4));
+	//console.log(JSON.stringify(data, null, 4));
 	return data;
 });
 
