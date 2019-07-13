@@ -132,16 +132,16 @@ client.on('message', async function(topic, message){
 					if (err){
 						reject(err);
 					}else{
-						result[0].subDevices.forEach(dataX => {	
-							dbo.collection("status").find({ _id: dataX.id }).toArray(function(err, resultx) {
+						result[0].subDevices.forEach(async (dataX) => {	
+							await dbo.collection("status").find({ _id: dataX.id }).toArray(function(err, resultx) {
 								//console.log(JSON.stringify(dataX, null, 4));
 								if (err){
 									reject(err);
 								}else{
 									data.push(resultx);
-						console.log(JSON.stringify(data, null, 4));
 								}
 							});
+							console.log(JSON.stringify(data, null, 4));
 						});	
 					}
 				})
