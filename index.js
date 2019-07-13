@@ -131,7 +131,7 @@ client.on('message', async function(topic, message){
 				var deviceData = await dbo.collection("devices").find({ _id: device }).toArray()
 				
 				var promise = new Promise((resolve, reject) => {
-					deviceData[0].subDevices.forEach(async (value, index, array) => {	
+					deviceData[0].subDevices.forEach(async (dataX, index, array) => {	
 						var dataArray = await dbo.collection("status").find({ _id: dataX.id }).toArray();
 						dataArray.forEach(singleObj => {
 							data.push({"id" : singleObj._id, "status" : singleObj.running});
