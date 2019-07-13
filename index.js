@@ -213,28 +213,30 @@ function prepareDeviceData(userEmail){
 			findDevices(userEmail, dbo).then(function(devicex){
 				const subDevices = [];
 				findSubDevices(devicex, dbo).then(function(subDevice){
-					subDevice.forEach(data => {	
-						console.log(JSON.stringify(data, null, 4));
-						const deviceData = {
-							"id": data.id,
-							"type": data.type,
-							"traits": [data.traits],
-							"name": {
-								"defaultNames": [data.defaultNames],
-								"name": data.name,
-								"nicknames": [data.nicknames]
-							},
-							"willReportState": false,
-							"deviceInfo": {
-								"manufacturer": "Marswave SmartHome",
-								"model": data.model,
-								"hwVersion": data.hwVersion,
-								"swVersion": data.swVersion
-							}
-						};
-						devices.push(deviceData);
+					subDevice.forEach(dataX => {	
+						dataX.forEach(data => {	
+							console.log(JSON.stringify(data, null, 4));
+							const deviceData = {
+								"id": data.id,
+								"type": data.type,
+								"traits": [data.traits],
+								"name": {
+									"defaultNames": [data.defaultNames],
+									"name": data.name,
+									"nicknames": [data.nicknames]
+								},
+								"willReportState": false,
+								"deviceInfo": {
+									"manufacturer": "Marswave SmartHome",
+									"model": data.model,
+									"hwVersion": data.hwVersion,
+									"swVersion": data.swVersion
+								}
+							};
+							devices.push(deviceData);
+						});
 					});
-					resolve(devices);
+				resolve(devices);
 				}, function(error){
 					reject("Error: " + error);
 				})
