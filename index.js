@@ -126,21 +126,14 @@ client.on('message', async function(topic, message){
 			else if(parts[0] == "fetch"){
 				var device = parts[1];
 				var query = { _id: device };
-				var data = [];
+				//var data = [];
 				console.log("fetch event");
 				dbo.collection("devices").find({ _id: device }).toArray(function(err, result) {
 					if (err){
 						reject(err);
 					}else{
 						result[0].subDevices.forEach(async (dataX) => {	
-							await dbo.collection("status").find({ _id: dataX.id }).toArray(function(err, resultx) {
-								//console.log(JSON.stringify(dataX, null, 4));
-								if (err){
-									reject(err);
-								}else{
-									data.push(resultx);
-								}
-							});
+							var data = dbo.collection("status").find({ _id: dataX.id }).toArray();
 							console.log(JSON.stringify(data, null, 4));
 						});	
 					}
