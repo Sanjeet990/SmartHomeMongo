@@ -133,7 +133,7 @@ client.on('message', async function(topic, message){
 						reject(err);
 					}else{
 						result[0].subDevices.forEach(async (dataX) => {	
-							var data = dbo.collection("status").find({ _id: dataX.id }).toArray();
+							var data = await dbo.collection("status").find({ _id: dataX.id }).toArray();
 							console.log(JSON.stringify(data, null, 4));
 						});	
 					}
