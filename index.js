@@ -5,7 +5,7 @@ var Promise = require('promise');
 
 var MongoClient = require('mongodb').MongoClient;
 
-var url = "mongodb://marswavehome.tk:27017/smarthome";
+var url = "mongodb://localhost:27017/smarthome";
 
 const {AuthenticationClient} = require('auth0');
 const auth0 = new AuthenticationClient({
