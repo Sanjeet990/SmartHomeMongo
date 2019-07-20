@@ -136,13 +136,12 @@ client.on('message', async function(topic, message){
 						dataArray.forEach(singleObj => {
 							data.push({"id" : singleObj._id, "status" : singleObj.running});
 						});
-						if(index === array.length - 1) resolve();
+						if(index === array.length - 1) resolve(JSON.stringify(data, null, 4));
 					});		
 				});
 
-				promise.then(() => {
-					const dta = JSON.stringify(data, null, 4);
-					client.publish('/device/status/' + device, "report:" + dta);
+				promise.then((dtax) => {
+					client.publish('/device/status/' + device, "report:" + dtax);
 					//console.log(JSON.stringify(data, null, 4));
 				});
 			}
