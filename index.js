@@ -134,14 +134,13 @@ client.on('message', async function(topic, message){
 					deviceData[0].subDevices.forEach(async (dataX, index, array) => {	
 						var dataArray = await dbo.collection("status").find({ _id: dataX.id }).toArray();
 						dataArray.forEach(singleObj => {
-							data.push({"id" : singleObj._id, "status" : singleObj.running});
+							data.push({'id' : singleObj._id, 'status' : singleObj.running});
 						});
 						if(index === array.length - 1) resolve(JSON.stringify(data, null, 0));
 					});		
 				});
 
 				promise.then((dtax) => {
-					dtax = '[{id:MW04HA2019SR000002SD01,status:true},{id:MW04HA2019SR000002SD04,status:false}]';
 					client.publish('/device/status/' + device, "report:" + dtax);
 					console.log(dtax);
 				});
