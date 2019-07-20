@@ -136,7 +136,7 @@ client.on('message', async function(topic, message){
 						dataArray.forEach(singleObj => {
 							data.push({"id" : singleObj._id, "status" : singleObj.running});
 						});
-						if(index === array.length - 1) resolve(JSON.stringify(data, null, 4));
+						if(index === array.length - 1) resolve(JSON.stringify(data, null, 0));
 					});		
 				});
 
