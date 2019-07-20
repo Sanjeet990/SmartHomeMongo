@@ -87,7 +87,7 @@ client.on('message', async function(topic, message){
 		status: 'SUCCESS',
 		states: {},
 	  }];
-	  
+
 	  try{
 			var deviceId = topic.replace('/device/status/', '');
 			var parts = message.toString().split(":");
@@ -141,8 +141,7 @@ client.on('message', async function(topic, message){
 				});
 
 				promise.then(() => {
-					client.publish('/device/status/' + device, JSON.stringify(data, null, 4));
-					//console.log('/device/status/' + device + '/report');
+					client.publish('/device/status/' + device, "report:" + JSON.stringify(data, null, 4));
 					//console.log(JSON.stringify(data, null, 4));
 				});
 			}
