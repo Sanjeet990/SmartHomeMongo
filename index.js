@@ -99,7 +99,7 @@ client.on('message', async function(topic, message){
 				else var state = false;
 				var newvalues = { $set: {lastonline: new Date().getTime(), running: state } };
 				dbo.collection("status").findOneAndUpdate(query, newvalues, {upsert:true,strict: false});
-				//client.publish('/device/status/' + deviceId, "status:" + state);
+				client.publish('/device/status/' + deviceId + '/state', "status:" + state);
 				commands[0].ids.push(deviceId);
 				commands[0].states = {
 					on: state,
