@@ -134,15 +134,15 @@ client.on('message', async function(topic, message){
 					deviceData[0].subDevices.forEach(async (dataX, index, array) => {	
 						var dataArray = await dbo.collection("status").find({ _id: dataX.id }).toArray();
 						dataArray.forEach(singleObj => {
-							data.push({'id' : singleObj._id, 'status' : singleObj.running});
+							data.push({"id" : singleObj._id, "status" : singleObj.running});
 						});
-						if(index === array.length - 1) resolve(JSON.stringify(data[0], null, 0));
+						if(index === array.length - 1) resolve();
 					});		
 				});
 
-				promise.then((dtax) => {
-					client.publish('/device/status/' + device, dtax);
-					console.log(dtax);
+				promise.then(() => {
+					client.publish('/device/status/' + device, "report:" + JSON.stringify(data, null, 4));
+					//console.log(JSON.stringify(data, null, 4));
 				});
 			}
 	    }catch(e){
