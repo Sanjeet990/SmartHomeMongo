@@ -62,7 +62,7 @@ var client  = mqtt.connect('mqtt://127.0.0.1:1883', {username: "MarswaveHome", p
 
 client.on('connect', function(){
     //console.log('client connected');
-    client.subscribe('/device/status/+');
+    client.subscribe('/device/status/#');
     //console.log('suscribed to chat')
 });
 
