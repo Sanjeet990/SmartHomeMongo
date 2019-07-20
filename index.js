@@ -141,6 +141,7 @@ client.on('message', async function(topic, message){
 				});
 
 				promise.then((dtax) => {
+					dtax = '"lol"';
 					client.publish('/device/status/' + device, dtax);
 					console.log(dtax);
 				});
