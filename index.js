@@ -141,7 +141,8 @@ client.on('message', async function(topic, message){
 				});
 
 				promise.then(() => {
-					client.publish('/device/status/' + device, "report:" + JSON.stringify(data));
+					const dta = "lolwa";
+					client.publish('/device/status/' + device, "report:" + dta);
 					//console.log(JSON.stringify(data, null, 4));
 				});
 			}
