@@ -141,7 +141,7 @@ client.on('message', async function(topic, message){
 				});
 
 				promise.then((dtax) => {
-					dtax = '[{"id":"MW04HA2019SR000002SD01","status":true},{"id":"MW04HA2019SR000002SD04","status":false}]';
+					dtax = '[{id:MW04HA2019SR000002SD01,status:true},{id:MW04HA2019SR000002SD04,status:false}]';
 					client.publish('/device/status/' + device, "report:" + dtax);
 					console.log(dtax);
 				});
