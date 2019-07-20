@@ -141,7 +141,8 @@ client.on('message', async function(topic, message){
 				});
 
 				promise.then(() => {
-					client.publish('/device/status/' + device + "/report", JSON.stringify(data, null, 4));
+					client.publish('/device/status/' + device + '/report', JSON.stringify(data, null, 4));
+					console.log('/device/status/' + device + '/report');
 					console.log(JSON.stringify(data, null, 4));
 				});
 			}
