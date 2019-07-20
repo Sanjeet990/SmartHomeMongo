@@ -62,7 +62,7 @@ var client  = mqtt.connect('mqtt://127.0.0.1:1883', {username: "MarswaveHome", p
 
 client.on('connect', function(){
     //console.log('client connected');
-    client.subscribe('/device/status/#');
+    client.subscribe('/device/status/+');
     //console.log('suscribed to chat')
 });
 
@@ -141,9 +141,9 @@ client.on('message', async function(topic, message){
 				});
 
 				promise.then(() => {
-					client.publish('/device/status/' + device + '/report', JSON.stringify(data, null, 4));
-					console.log('/device/status/' + device + '/report');
-					console.log(JSON.stringify(data, null, 4));
+					client.publish('/device/status/' + device, JSON.stringify(data, null, 4));
+					//console.log('/device/status/' + device + '/report');
+					//console.log(JSON.stringify(data, null, 4));
 				});
 			}
 	    }catch(e){
