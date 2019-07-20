@@ -141,7 +141,7 @@ client.on('message', async function(topic, message){
 				});
 
 				promise.then((dtax) => {
-					client.publish('/device/status/' + device, "report:" + dtax);
+					client.publish('/device/status/' + device, dtax);
 					console.log(dtax);
 				});
 			}
