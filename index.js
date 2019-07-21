@@ -90,7 +90,7 @@ client.on('message', async function(topic, message){
 	  
 	  
 	  try{
-			console.log(topic);
+			console.log(message.toString());
 			var deviceId = topic.replace('/device/status/', '');
 			var parts = message.toString().split(":");
 			var query = { _id: deviceId };
