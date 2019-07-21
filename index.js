@@ -125,6 +125,12 @@ client.on('message', async function(topic, message){
 					//console.log("Failed reporting: " + res);
 				});
 			}
+			else if(parts[0] == "power"){
+				if(parts[1] == "true") var state = true;
+				else var state = false;
+				var newvalues = { $set: {electricity: state } };
+				dbo.collection("devices").findOneAndUpdate(query, newvalues, {upsert:true,strict: false});
+			}
 			else if(parts[0] == "fetch"){
 				var device = parts[1];
 				var query = { _id: device };
