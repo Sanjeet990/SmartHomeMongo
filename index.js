@@ -88,9 +88,9 @@ client.on('message', async function(topic, message){
 		states: {},
 	  }];
 	  
-	  console.log(message);
 	  
 	  try{
+			console.log(topic);
 			var deviceId = topic.replace('/device/status/', '');
 			var parts = message.toString().split(":");
 			var query = { _id: deviceId };
