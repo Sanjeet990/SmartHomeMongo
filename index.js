@@ -131,6 +131,11 @@ client.on('message', async function(topic, message){
 				var newvalues = { $set: {electricity: state } };
 				dbo.collection("devices").findOneAndUpdate(query, newvalues, {upsert:true,strict: false});
 			}
+			else if(parts[0] == "version"){
+				var ver = parts[1];
+				var newvalues = { $set: {version: ver } };
+				dbo.collection("devices").findOneAndUpdate(query, newvalues, {upsert:true,strict: false});
+			}
 			else if(parts[0] == "fetch"){
 				var device = parts[1];
 				var query = { _id: device };
