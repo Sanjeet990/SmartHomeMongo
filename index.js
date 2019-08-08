@@ -80,15 +80,8 @@ const getEmail = async (headers) => {
 	refresh_token: accessToken
   };
   
-  auth0.refreshToken(data, function (err, userData) {
-	  if (err) {
-		// Handle error.
-		console.log(err);
-	  }
-
-	  console.log(userData);
-  });
-
+  var token = auth0.refreshToken(data);
+  console.log(token);
   const {email} = await auth0.getProfile(accessToken);
   return email;
 }
