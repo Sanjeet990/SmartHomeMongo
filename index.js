@@ -74,6 +74,21 @@ const app = smarthome({
 
 const getEmail = async (headers) => {
   const accessToken = headers.authorization.substr(7);
+  
+  //First refresh the expired token
+  var data = {
+	client_id: 'v12WpZgnb7rdCH8opzT0I03Zirux4Lm2',
+	refresh_token: accessToken,
+  };
+  
+  auth0.refreshToken(data, function (err, userData) {
+	  if (err) {
+		// Handle error.
+	  }
+
+	  console.log(userData);
+  });
+
   const {email} = await auth0.getProfile(accessToken);
   return email;
 }
