@@ -77,8 +77,7 @@ const getEmail = async (headers) => {
   
   //First refresh the expired token
   var data = {
-	client_id: 'v12WpZgnb7rdCH8opzT0I03Zirux4Lm2',
-	refresh_token: accessToken,
+	refresh_token: accessToken
   };
   
   auth0.refreshToken(data, function (err, userData) {
