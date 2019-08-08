@@ -84,6 +84,7 @@ const getEmail = async (headers) => {
   auth0.refreshToken(data, function (err, userData) {
 	  if (err) {
 		// Handle error.
+		console.log(err);
 	  }
 
 	  console.log(userData);
