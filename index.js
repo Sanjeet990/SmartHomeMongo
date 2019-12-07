@@ -393,6 +393,7 @@ app.onExecute(async (body, headers) => {
 				commands,
 			},
 		  };
+	console.log(JSON.stringify(myObject, null, 4));
 	return data;
 });
 
