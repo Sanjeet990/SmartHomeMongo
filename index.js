@@ -380,6 +380,7 @@ app.onExecute(async (body, headers) => {
 				},
 			});
 		}catch (e) {
+			console.log("Error" + e.message);
 			commands.push({
 				ids: [device.id],
 				status: 'ERROR',
@@ -393,7 +394,7 @@ app.onExecute(async (body, headers) => {
 				commands,
 			},
 		  };
-	console.log(JSON.stringify(myObject, null, 4));
+	console.log(JSON.stringify(data, null, 4));
 	return data;
 });
 
