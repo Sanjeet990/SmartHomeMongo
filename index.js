@@ -270,6 +270,7 @@ function prepareDeviceData(userEmail){
 }
 
 app.onSync(async (body, headers) => {
+	console.log("onSync");
 	const userEmail = await getEmail(headers);
 	//const userEmail = "sanjeet.pathak990@gmail.com";
 	var devices = await prepareDeviceData(userEmail);
@@ -287,6 +288,7 @@ app.onSync(async (body, headers) => {
 
 app.onQuery(async (body, headers) => {
 	// TODO Get device state
+	console.log("onQuery");
 	try{
 		const userId = await getEmail(headers);
 		const { devices } = body.inputs[0].payload;
@@ -344,6 +346,8 @@ app.onDisconnect((body, headers) => {
 });
 
 app.onExecute(async (body, headers) => {
+	
+	console.log("onExec");
 	const userId = await getEmail(headers);
 	
 	const commands = [{
