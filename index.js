@@ -313,7 +313,7 @@ app.onQuery(async (body, headers) => {
 				devices: deviceStates,
 			  },
 			};
-		//console.log(JSON.stringify(myObject, null, 4));
+		console.log(JSON.stringify(myObject, null, 4));
 		return myObject;
 	}catch(e){
 	  //console.log(e.getmessage);
