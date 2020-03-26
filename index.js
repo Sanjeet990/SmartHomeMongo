@@ -43,17 +43,17 @@ server.authenticate = function (client, username, password, callback) {
  }
 
 server.on('ready', function(){
-	//console.log("ready");
+	console.log("ready");
 });
 
 server.on('clientConnected', function(client) {
-	//console.log('client connected', client.id);
-	clientID = client.id;
+	console.log('client connected', client.id);
+	//clientID = client.id;
 });
 
 server.on('published', function(packet, client) {
 	//console.log(JSON.stringify(client, null, 4));
-	//console.log('message from server: ', packet.payload + ' - ' + client);
+	console.log('message from server: ', packet.payload + ' - ' + client);
 });
 
 //create a MQTT client to push status
@@ -61,7 +61,7 @@ var mqtt = require('mqtt')
 var client  = mqtt.connect('mqtt://127.0.0.1:1883', {username: "MarswaveHome", password: "Marswave@2020"})
 
 client.on('connect', function(){
-    //console.log('client connected');
+    console.log('client connected');
     client.subscribe('/device/status/+');
     //console.log('suscribed to chat')
 });
