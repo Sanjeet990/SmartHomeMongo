@@ -5,7 +5,7 @@ var Promise = require('promise');
 
 var MongoClient = require('mongodb').MongoClient;
 
-var url = "mongodb://localhost:27017/smarthome";
+var url = "mongodb://HomeAuto:MWHome%402020@44.231.113.196:27017/SmartHome";
 
 const {AuthenticationClient} = require('auth0');
 const auth0 = new AuthenticationClient({
@@ -25,7 +25,7 @@ function initDBConnection(){
 			if (err) {
                 reject(err);
             } else {
-				var dbo = db.db("smarthome");
+				var dbo = db.db("SmartHome");
                 resolve(dbo);
             }
 		})
@@ -35,7 +35,7 @@ function initDBConnection(){
 var server = new mosca.Server(settings);
 
 server.authenticate = function (client, username, password, callback) {
-	if(username=="MarswaveHome" && password == "Marswave@2017"){
+	if(username=="MarswaveHome" && password == "Marswave@2020"){
 		callback(null, true);
 	}else{
 		callback(null, false);
