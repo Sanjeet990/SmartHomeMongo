@@ -58,7 +58,7 @@ server.on('published', function(packet, client) {
 
 //create a MQTT client to push status
 var mqtt = require('mqtt')
-var client  = mqtt.connect('mqtt://127.0.0.1:1883', {username: "MarswaveHome", password: "Marswave@2017"})
+var client  = mqtt.connect('mqtt://127.0.0.1:1883', {username: "MarswaveHome", password: "Marswave@2020"})
 
 client.on('connect', function(){
     //console.log('client connected');
