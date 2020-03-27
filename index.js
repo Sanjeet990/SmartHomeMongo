@@ -129,8 +129,10 @@ client.on('message', async function(topic, message){
 			else if(parts[0] == "power"){
 				if(parts[1] == "true") var state = true;
 				else var state = false;
-				var newvalues = { $set: {electricity: state } };
+				var online = new Date();
+				var newvalues = { $set: {electricity: state,  lastonline : online} };
 				dbo.collection("devices").findOneAndUpdate(query, newvalues, {upsert:true,strict: false});
+				client.publish('/device/status/' + deviceId + '/ping', "alive");
 			}
 			else if(parts[0] == "version"){
 				var ver = parts[1];
