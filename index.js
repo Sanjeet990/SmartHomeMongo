@@ -126,13 +126,14 @@ client.on('message', async function(topic, message){
 					//console.log("Failed reporting: " + res);
 				});
 			}
-			else if(parts[0] == "power"){
-				if(parts[1] == "true") var state = true;
-				else var state = false;
-				var online = new Date();
-				var newvalues = { $set: {electricity: state,  lastonline : online} };
-				dbo.collection("devices").findOneAndUpdate(query, newvalues, {upsert:true,strict: false});
-				client.publish('/device/status/' + deviceId + '/ping', "alive");
+			else if(parts[0] == "heartbeat"){
+				if(parts[1] == "alive")
+				{
+					var online = new Date();
+					var newvalues = { $set: {lastonline : online} };
+					dbo.collection("devices").findOneAndUpdate(query, newvalues, {upsert:true,strict: false});
+					client.publish('/device/status/' + deviceId + '/ping', "alive");
+				}
 			}
 			else if(parts[0] == "version"){
 				var ver = parts[1];
