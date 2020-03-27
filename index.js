@@ -132,7 +132,6 @@ client.on('message', async function(topic, message){
 					var online = new Date();
 					var newvalues = { $set: {lastonline : online} };
 					dbo.collection("devices").findOneAndUpdate(query, newvalues, {upsert:true,strict: false});
-					client.publish('/device/status/' + deviceId + '/ping', "alive");
 				}
 			}
 			else if(parts[0] == "version"){
